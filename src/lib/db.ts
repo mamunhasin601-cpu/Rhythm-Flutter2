@@ -10,8 +10,21 @@
  * ============================================================ */
 
 import type {
-  FocusSession, MoodCorrelation, MoodExportLog, MoodInsightEvent, MoodInsightFeedback, MoodLog, MoodPromptLog,
-  MoodPromptSettings, ProductivitySlot, Routine, Suggestion, SuggestionFeedback, Task, TaskTemplate, User,
+  FocusSession,
+  MoodCorrelation,
+  MoodExportLog,
+  MoodInsightEvent,
+  MoodInsightFeedback,
+  MoodLog,
+  MoodPromptLog,
+  MoodPromptSettings,
+  ProductivitySlot,
+  Routine,
+  Suggestion,
+  SuggestionFeedback,
+  Task,
+  TaskTemplate,
+  User,
 } from "./types";
 import { pad2 } from "./time";
 
@@ -55,14 +68,21 @@ function backfill(raw: Partial<Schema>): Schema {
         themePalette: l.themePalette ?? "default",
         quietFrom: l.quietFrom ?? 22 * 60,
         quietTo: l.quietTo ?? 8 * 60,
-        notifications: l.notifications ?? { enabled: false, taskReminder: true, focusTime: true, morningBriefing: true, eveningReview: true },
+        notifications: l.notifications ?? {
+          enabled: false,
+          taskReminder: true,
+          focusTime: true,
+          morningBriefing: true,
+          eveningReview: true,
+        },
       };
     }),
     tasks: raw.tasks ?? [],
     routines: raw.routines ?? [],
     mood_logs: (raw.mood_logs ?? []).map((m) => {
       const l = m as Partial<MoodLog>;
-      const loggedAt = l.loggedAt ?? `${m.date}T${pad2(Math.floor(m.timeMin / 60))}:${pad2(m.timeMin % 60)}:00`;
+      const loggedAt =
+        l.loggedAt ?? `${m.date}T${pad2(Math.floor(m.timeMin / 60))}:${pad2(m.timeMin % 60)}:00`;
       return {
         ...m,
         tags: l.tags ?? [],
@@ -101,17 +121,31 @@ const LocalAdapter: StorageAdapter = {
     }
   },
   async persist(schema) {
+    /* Захватываем хранилище до async-паузы: commit может быть fire-and-forget,
+     * а тестовый document — демонтирован сразу после пользовательского действия. */
+    const storage = localStorage;
     await latency(20);
-    localStorage.setItem(DB_KEY, JSON.stringify(schema));
+    storage.setItem(DB_KEY, JSON.stringify(schema));
   },
 };
 
 let schema: Schema = {
   version: SCHEMA_VERSION,
-  users: [], tasks: [], routines: [], mood_logs: [],
-  focus_sessions: [], suggestions: [], suggestion_feedback: [], user_productivity_slots: [], task_templates: [],
-  user_mood_correlations: [], mood_prompt_settings: [], mood_prompt_log: [],
-  mood_insight_feedback: [], mood_insight_events: [], mood_export_log: [],
+  users: [],
+  tasks: [],
+  routines: [],
+  mood_logs: [],
+  focus_sessions: [],
+  suggestions: [],
+  suggestion_feedback: [],
+  user_productivity_slots: [],
+  task_templates: [],
+  user_mood_correlations: [],
+  mood_prompt_settings: [],
+  mood_prompt_log: [],
+  mood_insight_feedback: [],
+  mood_insight_events: [],
+  mood_export_log: [],
 };
 
 export const db = {
@@ -200,10 +234,19 @@ export const db = {
   ) {
     schema.tasks = [...schema.tasks.filter((t) => t.userId !== userId), ...remote.tasks];
     schema.routines = [...schema.routines.filter((r) => r.userId !== userId), ...remote.routines];
-    schema.focus_sessions = [...schema.focus_sessions.filter((s) => s.userId !== userId), ...remote.focusSessions];
+    schema.focus_sessions = [
+      ...schema.focus_sessions.filter((s) => s.userId !== userId),
+      ...remote.focusSessions,
+    ];
     schema.suggestions = [...schema.suggestions.filter((s) => s.userId !== userId), ...remote.suggestions];
-    schema.task_templates = [...schema.task_templates.filter((t) => t.userId !== userId), ...remote.templates];
-    schema.user_productivity_slots = [...schema.user_productivity_slots.filter((s) => s.userId !== userId), ...remote.slots];
+    schema.task_templates = [
+      ...schema.task_templates.filter((t) => t.userId !== userId),
+      ...remote.templates,
+    ];
+    schema.user_productivity_slots = [
+      ...schema.user_productivity_slots.filter((s) => s.userId !== userId),
+      ...remote.slots,
+    ];
     schema.mood_logs = [...schema.mood_logs.filter((m) => m.userId !== userId), ...remote.moods];
   },
 

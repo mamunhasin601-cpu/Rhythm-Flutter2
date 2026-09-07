@@ -32,10 +32,12 @@ export function generate(signals: EngineSignals, now = nowMin(), today = todayKe
   /* GAP-1: cold start — при <7 днях истории golden_hour не генерируется. */
   const gw = signals.goldenReady ? goldenWindow(windows, now) : null;
   if (gw) {
-    const hard = tasks.filter((t) => t.date === today && t.status === "todo" && !t.recurrenceRule && t.startMin > now);
+    const hard = tasks.filter(
+      (t) => t.date === today && t.status === "todo" && !t.recurrenceRule && t.startMin > now
+    );
     const highEnergy = hard.filter((t) => t.energy === "high");
     const target = highEnergy[0] ?? hard[0];
-    const ttl = Math.max(5, Math.round((gw.end - now)));
+    const ttl = Math.max(5, Math.round(gw.end - now));
     out.push({
       kind: "golden_hour",
       priority: 9,
@@ -56,7 +58,10 @@ export function generate(signals: EngineSignals, now = nowMin(), today = todayKe
     out.push({
       kind: "reschedule",
       priority: 8,
-      title: plan.length === 1 ? `Перенести «${first.task.title}»?` : `Перенести ${plan.length} просроченные задачи?`,
+      title:
+        plan.length === 1
+          ? `Перенести «${first.task.title}»?`
+          : `Перенести ${plan.length} просроченные задачи?`,
       body:
         first.date === today
           ? `Нашлось окно сегодня в ${minToHM(first.startMin)}.`
@@ -96,7 +101,7 @@ export function generate(signals: EngineSignals, now = nowMin(), today = todayKe
       kind: "break_down",
       priority: 6,
       title: `«${t.title}» буксует`,
-      body: `Задачу переносили ${(t.movedCount ?? 0)} раз. Разбить на 2 шага по ${Math.round(half / 60 * 10) / 10} ч?`,
+      body: `Задачу переносили ${t.movedCount ?? 0} раз. Разбить на 2 шага по ${Math.round((half / 60) * 10) / 10} ч?`,
       context: {
         taskId: t.id,
         subtasks: [

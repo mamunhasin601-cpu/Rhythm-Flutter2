@@ -12,8 +12,16 @@
  * ============================================================ */
 
 import type {
-  DailyStat, FocusSession, MoodLog, ProductivitySlot, Routine, RoutineCompletion,
-  Suggestion, SuggestionFeedback, Task, TaskTemplate,
+  DailyStat,
+  FocusSession,
+  MoodLog,
+  ProductivitySlot,
+  Routine,
+  RoutineCompletion,
+  Suggestion,
+  SuggestionFeedback,
+  Task,
+  TaskTemplate,
 } from "../types";
 
 export interface AuthUser {

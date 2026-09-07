@@ -8,8 +8,7 @@ import { useEffect, type RefObject } from "react";
  *  - Esc вызывает onClose.
  * Не блокирует скролл и не мешает Reduce Motion (только фокус).
  */
-const SELECTOR =
-  'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
+const SELECTOR = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
 export function useFocusTrap(ref: RefObject<HTMLElement>, active: boolean, onClose?: () => void) {
   useEffect(() => {
@@ -19,7 +18,8 @@ export function useFocusTrap(ref: RefObject<HTMLElement>, active: boolean, onClo
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
 
-    const focusables = () => Array.from(node.querySelectorAll<HTMLElement>(SELECTOR)).filter((el) => el.offsetParent !== null);
+    const focusables = () =>
+      Array.from(node.querySelectorAll<HTMLElement>(SELECTOR)).filter((el) => el.offsetParent !== null);
 
     const initial = focusables()[0] ?? node;
     if (initial.tabIndex < 0 && initial === node) initial.tabIndex = -1;

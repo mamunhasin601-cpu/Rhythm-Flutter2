@@ -57,7 +57,10 @@ export interface ProductivityWindow {
  * сливаются в ОДНО окно без ограничения длины; окно короче 60 мин
  * отбрасывается; возвращается до 3 самых сильных окон за день.
  */
-export function productivityWindows(scores: number[], opts: { minScore?: number } = {}): ProductivityWindow[] {
+export function productivityWindows(
+  scores: number[],
+  opts: { minScore?: number } = {}
+): ProductivityWindow[] {
   const { minScore = 2 } = opts;
   const windows: ProductivityWindow[] = [];
   let cur: ProductivityWindow | null = null;

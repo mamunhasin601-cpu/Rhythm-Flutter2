@@ -56,7 +56,10 @@ export const MoodRepository = {
   },
 
   /** Обновить запись (состояние/заметка/теги/время). Обновляет updatedAt. */
-  update(id: string, patch: Partial<Pick<MoodLog, "mood" | "note" | "tags" | "linkedTaskIds" | "date" | "timeMin">>): void {
+  update(
+    id: string,
+    patch: Partial<Pick<MoodLog, "mood" | "note" | "tags" | "linkedTaskIds" | "date" | "timeMin">>
+  ): void {
     const existing = db.findMood(id);
     if (!existing) return;
     db.updateMood({ ...existing, ...patch, updatedAt: new Date().toISOString() });

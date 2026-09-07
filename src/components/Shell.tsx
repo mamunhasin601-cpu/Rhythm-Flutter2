@@ -17,7 +17,9 @@ function Switch({ on, onToggle }: { on: boolean; onToggle: () => void }) {
       onClick={onToggle}
       className={`relative h-[20px] w-[36px] shrink-0 rounded-full transition-colors ${on ? "bg-aqua-500" : "bg-ink-600"}`}
     >
-      <span className={`absolute top-[2.5px] h-[15px] w-[15px] rounded-full bg-white shadow transition-all ${on ? "left-[18px]" : "left-[3px]"}`} />
+      <span
+        className={`absolute top-[2.5px] h-[15px] w-[15px] rounded-full bg-white shadow transition-all ${on ? "left-[18px]" : "left-[3px]"}`}
+      />
     </button>
   );
 }
@@ -73,7 +75,11 @@ function ToastHost() {
         >
           <I n={icon[t.kind]} size={16} className="mt-[1px]" />
           <p className="flex-1 text-[12.5px] font-semibold leading-snug text-mist-100">{t.text}</p>
-          <button className="text-mist-500 transition hover:text-mist-200" onClick={() => dismissToast(t.id)} aria-label="Скрыть">
+          <button
+            className="text-mist-500 transition hover:text-mist-200"
+            onClick={() => dismissToast(t.id)}
+            aria-label="Скрыть"
+          >
             <I n="x" size={13} />
           </button>
         </div>
@@ -111,7 +117,13 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
             <div className="truncate text-[12.5px] text-mist-400">{user.email}</div>
           </div>
           <span className="chip">
-            {user.provider === "email" ? <I n="mail" size={11} /> : user.provider === "google" ? <GoogleG size={11} /> : <I n="user" size={11} />}
+            {user.provider === "email" ? (
+              <I n="mail" size={11} />
+            ) : user.provider === "google" ? (
+              <GoogleG size={11} />
+            ) : (
+              <I n="user" size={11} />
+            )}
             {user.provider === "email" ? "Email" : user.provider === "google" ? "Google" : "Apple"}
           </span>
         </section>
@@ -126,17 +138,22 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                   a === "violet"
                     ? "linear-gradient(120deg,#9D7BFF,#6C7BFF)"
                     : a === "indigo"
-                    ? "linear-gradient(120deg,#6C7BFF,#5AB8F2)"
-                    : "linear-gradient(120deg,#37D6C0,#6C7BFF)";
+                      ? "linear-gradient(120deg,#6C7BFF,#5AB8F2)"
+                      : "linear-gradient(120deg,#37D6C0,#6C7BFF)";
                 return (
                   <button
                     key={a}
                     onClick={() => {
                       app.updateUser({ accent: a });
-                      app.toast("success", `Акцент изменён: ${a === "violet" ? "фиолет" : a === "indigo" ? "индиго" : "бирюза"}`);
+                      app.toast(
+                        "success",
+                        `Акцент изменён: ${a === "violet" ? "фиолет" : a === "indigo" ? "индиго" : "бирюза"}`
+                      );
                     }}
                     className={`h-9 flex-1 rounded-lg border-2 transition ${
-                      user.accent === a ? "border-white/70 scale-[1.03]" : "border-transparent opacity-70 hover:opacity-100"
+                      user.accent === a
+                        ? "border-white/70 scale-[1.03]"
+                        : "border-transparent opacity-70 hover:opacity-100"
                     }`}
                     style={{ background: grad }}
                     aria-label={a}
@@ -164,7 +181,9 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                 {user.sleepHours.toFixed(1).replace(".0", "")} ч
               </span>
             </div>
-            <p className="mt-2 text-[11.5px] leading-relaxed text-mist-500">Влияет на кривую энергии в «Ритме» и умные подсказки.</p>
+            <p className="mt-2 text-[11.5px] leading-relaxed text-mist-500">
+              Влияет на кривую энергии в «Ритме» и умные подсказки.
+            </p>
           </section>
 
           {/* тема таймлайна */}
@@ -180,7 +199,9 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                     app.toast("success", `Тема: ${p.label}`);
                   }}
                   className={`flex h-9 flex-1 items-center justify-center gap-1 rounded-lg border-2 transition ${
-                    user.themePalette === p.id ? "border-white/70 scale-[1.03]" : "border-transparent opacity-70 hover:opacity-100"
+                    user.themePalette === p.id
+                      ? "border-white/70 scale-[1.03]"
+                      : "border-transparent opacity-70 hover:opacity-100"
                   } bg-ink-800`}
                   aria-label={p.label}
                 >
@@ -196,19 +217,28 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                 className="input !w-auto !py-1 !text-[11.5px]"
                 value={user.customColor?.slot ?? "violet"}
                 onChange={(e) =>
-                  app.updateUser({ customColor: { slot: e.target.value as TaskColor, hex: user.customColor?.hex ?? "#C084FC" } })
+                  app.updateUser({
+                    customColor: {
+                      slot: e.target.value as TaskColor,
+                      hex: user.customColor?.hex ?? "#C084FC",
+                    },
+                  })
                 }
                 aria-label="Слот цвета"
               >
                 {(Object.keys(TASK_COLORS) as TaskColor[]).map((c) => (
-                  <option key={c} value={c}>{COLOR_NAMES[c]}</option>
+                  <option key={c} value={c}>
+                    {COLOR_NAMES[c]}
+                  </option>
                 ))}
               </select>
               <input
                 type="color"
                 value={user.customColor?.hex ?? "#C084FC"}
                 onChange={(e) =>
-                  app.updateUser({ customColor: { slot: user.customColor?.slot ?? "violet", hex: e.target.value } })
+                  app.updateUser({
+                    customColor: { slot: user.customColor?.slot ?? "violet", hex: e.target.value },
+                  })
                 }
                 className="h-8 w-10 cursor-pointer rounded-md border border-white/10 bg-ink-800"
                 aria-label="Выбор цвета"
@@ -229,14 +259,21 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                     return;
                   }
                   app.updateUser({ notifications: { ...user.notifications, enabled: next } });
-                  app.toast(next ? "success" : "info", next ? "Уведомления включены" : "Уведомления выключены");
+                  app.toast(
+                    next ? "success" : "info",
+                    next ? "Уведомления включены" : "Уведомления выключены"
+                  );
                 }}
               />
             </div>
             {notify.permission() === "denied" && (
-              <p className="mt-1.5 text-[11px] font-semibold text-warn">Браузер заблокировал уведомления — разреши их в настройках сайта</p>
+              <p className="mt-1.5 text-[11px] font-semibold text-warn">
+                Браузер заблокировал уведомления — разреши их в настройках сайта
+              </p>
             )}
-            <div className={`mt-2.5 space-y-2 ${user.notifications.enabled ? "" : "pointer-events-none opacity-45"}`}>
+            <div
+              className={`mt-2.5 space-y-2 ${user.notifications.enabled ? "" : "pointer-events-none opacity-45"}`}
+            >
               {(Object.keys(NOTIF_META) as (keyof typeof NOTIF_META)[]).map((k) => (
                 <div key={k} className="flex items-center justify-between gap-2">
                   <div className="min-w-0">
@@ -245,7 +282,11 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                   </div>
                   <Switch
                     on={user.notifications[k]}
-                    onToggle={() => app.updateUser({ notifications: { ...user.notifications, [k]: !user.notifications[k] } })}
+                    onToggle={() =>
+                      app.updateUser({
+                        notifications: { ...user.notifications, [k]: !user.notifications[k] },
+                      })
+                    }
                   />
                 </div>
               ))}
@@ -255,9 +296,21 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                   <div className="text-[10.5px] text-mist-500">уведомления молчат</div>
                 </div>
                 <div className="flex items-center gap-1 text-[12px] text-mist-400">
-                  <input type="time" className="input !w-auto !px-2 !py-1 !text-[11.5px]" value={minToHM(user.quietFrom)} onChange={(e) => e.target.value && app.updateUser({ quietFrom: hmToMin(e.target.value) })} aria-label="Тихие часы: начало" />
+                  <input
+                    type="time"
+                    className="input !w-auto !px-2 !py-1 !text-[11.5px]"
+                    value={minToHM(user.quietFrom)}
+                    onChange={(e) => e.target.value && app.updateUser({ quietFrom: hmToMin(e.target.value) })}
+                    aria-label="Тихие часы: начало"
+                  />
                   –
-                  <input type="time" className="input !w-auto !px-2 !py-1 !text-[11.5px]" value={minToHM(user.quietTo)} onChange={(e) => e.target.value && app.updateUser({ quietTo: hmToMin(e.target.value) })} aria-label="Тихие часы: конец" />
+                  <input
+                    type="time"
+                    className="input !w-auto !px-2 !py-1 !text-[11.5px]"
+                    value={minToHM(user.quietTo)}
+                    onChange={(e) => e.target.value && app.updateUser({ quietTo: hmToMin(e.target.value) })}
+                    aria-label="Тихие часы: конец"
+                  />
                 </div>
               </div>
             </div>
@@ -289,7 +342,11 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                 Отключить
               </button>
             ) : (
-              <button className="btn btn-primary !px-3.5 !py-1.5 !text-[12px]" onClick={() => void app.connectCalendar()} disabled={sync.syncing}>
+              <button
+                className="btn btn-primary !px-3.5 !py-1.5 !text-[12px]"
+                onClick={() => void app.connectCalendar()}
+                disabled={sync.syncing}
+              >
                 {sync.syncing ? <Spinner size={14} /> : <I n="external" size={14} />} Подключить
               </button>
             )}
@@ -298,7 +355,11 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
           {sync.connected && (
             <div className="anim-rise mt-3.5 space-y-3 border-t border-white/6 pt-3.5">
               <div className="flex flex-wrap items-center gap-2.5">
-                <button className="btn btn-aqua !px-3.5 !py-1.5 !text-[12px]" onClick={() => void app.syncNow()} disabled={sync.syncing}>
+                <button
+                  className="btn btn-aqua !px-3.5 !py-1.5 !text-[12px]"
+                  onClick={() => void app.syncNow()}
+                  disabled={sync.syncing}
+                >
                   {sync.syncing ? <Spinner size={13} /> : <I n="refresh" size={13} />} Синхронизировать сейчас
                 </button>
                 <div className="ml-auto flex items-center gap-2">
@@ -316,16 +377,33 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
                 </div>
               </div>
               {syncLog.length > 0 && (
-                <div ref={logRef} className="max-h-[110px] space-y-1 overflow-y-auto rounded-lg bg-ink-950/70 p-2.5 font-mono text-[11px] leading-relaxed">
+                <div
+                  ref={logRef}
+                  className="max-h-[110px] space-y-1 overflow-y-auto rounded-lg bg-ink-950/70 p-2.5 font-mono text-[11px] leading-relaxed"
+                >
                   {syncLog.map((l, i) => (
                     <div key={i} className="flex gap-2">
-                      <span className="text-mist-500">{new Date(l.at).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span>
-                      <span className={l.kind === "ok" ? "text-ok" : l.kind === "warn" ? "text-warn" : "text-mist-300"}>{l.text}</span>
+                      <span className="text-mist-500">
+                        {new Date(l.at).toLocaleTimeString("ru-RU", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
+                      </span>
+                      <span
+                        className={
+                          l.kind === "ok" ? "text-ok" : l.kind === "warn" ? "text-warn" : "text-mist-300"
+                        }
+                      >
+                        {l.text}
+                      </span>
                     </div>
                   ))}
                 </div>
               )}
-              <p className="text-[11px] text-mist-500">Демо-провайдер: OAuth и Calendar API v3 подключаются в этом же интерфейсе.</p>
+              <p className="text-[11px] text-mist-500">
+                Демо-провайдер: OAuth и Calendar API v3 подключаются в этом же интерфейсе.
+              </p>
             </div>
           )}
         </section>
@@ -343,7 +421,9 @@ function SettingsModal({ open, onClose }: { open: boolean; onClose: () => void }
               >
                 <I n="trash" size={14} /> Да, пересоздать
               </button>
-              <button className="btn btn-ghost" onClick={() => setArmed(false)}>Отмена</button>
+              <button className="btn btn-ghost" onClick={() => setArmed(false)}>
+                Отмена
+              </button>
             </>
           ) : (
             <button className="btn btn-ghost" onClick={() => setArmed(true)}>
@@ -374,13 +454,18 @@ function HelpModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     <Modal open={open} onClose={onClose} title="Горячие клавиши" icon="bolt" width={420}>
       <div className="space-y-1.5">
         {HOTKEYS.map((h) => (
-          <div key={h.keys} className="flex items-center justify-between rounded-lg bg-white/[0.02] px-3 py-2">
+          <div
+            key={h.keys}
+            className="flex items-center justify-between rounded-lg bg-white/[0.02] px-3 py-2"
+          >
             <span className="text-[12.5px] font-semibold text-mist-300">{h.desc}</span>
             <span className="font-display text-[11px] font-bold text-vio-300">{h.keys}</span>
           </div>
         ))}
       </div>
-      <p className="mt-3 text-[11px] font-semibold text-mist-500">Сочетания не срабатывают, когда фокус в поле ввода.</p>
+      <p className="mt-3 text-[11px] font-semibold text-mist-500">
+        Сочетания не срабатывают, когда фокус в поле ввода.
+      </p>
     </Modal>
   );
 }
@@ -421,8 +506,12 @@ export default function Shell({
         <div className="mb-6 flex items-center gap-2.5 px-2">
           <LogoMark size={34} />
           <div>
-            <div className="font-display text-[16px] font-bold leading-tight tracking-tight text-mist-50">Rhythm</div>
-            <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-mist-500">in tune with you</div>
+            <div className="font-display text-[16px] font-bold leading-tight tracking-tight text-mist-50">
+              Rhythm
+            </div>
+            <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-mist-500">
+              in tune with you
+            </div>
           </div>
         </div>
 
@@ -435,14 +524,20 @@ export default function Shell({
                 onClick={() => app.setTab(n.id)}
                 data-testid={`nav-${n.id}`}
                 className={`group relative flex items-center gap-3 rounded-[10px] px-3 py-[9px] text-left text-[13.5px] font-bold transition-all duration-200 ${
-                  active ? "bg-white/6 text-mist-50" : "text-mist-400 hover:bg-white/[0.035] hover:text-mist-200"
+                  active
+                    ? "bg-white/6 text-mist-50"
+                    : "text-mist-400 hover:bg-white/[0.035] hover:text-mist-200"
                 }`}
               >
-                {active && <span className="grad-brand absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full" />}
+                {active && (
+                  <span className="grad-brand absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full" />
+                )}
                 <I n={n.icon} size={17} className={active ? "text-vio-300" : ""} />
                 {n.label}
                 {n.id === "today" && pending > 0 && (
-                  <span className="ml-auto rounded-full bg-warn/15 px-1.5 py-0.5 text-[10px] font-extrabold text-warn">{pending}</span>
+                  <span className="ml-auto rounded-full bg-warn/15 px-1.5 py-0.5 text-[10px] font-extrabold text-warn">
+                    {pending}
+                  </span>
                 )}
               </button>
             );
@@ -458,7 +553,9 @@ export default function Shell({
                 : "border-white/8 bg-white/[0.02] hover:bg-white/[0.05]"
             }`}
           >
-            <span className={`h-2 w-2 rounded-full ${sync.connected ? "bg-aqua-400 now-dot" : "bg-ink-500"}`} />
+            <span
+              className={`h-2 w-2 rounded-full ${sync.connected ? "bg-aqua-400 now-dot" : "bg-ink-500"}`}
+            />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[12px] font-bold text-mist-200">
                 {sync.connected ? "Calendar подключён" : "Calendar не подключён"}
@@ -479,8 +576,8 @@ export default function Shell({
                     user.accent === "violet"
                       ? "linear-gradient(120deg,#9D7BFF,#6C7BFF)"
                       : user.accent === "indigo"
-                      ? "linear-gradient(120deg,#6C7BFF,#5AB8F2)"
-                      : "linear-gradient(120deg,#37D6C0,#6C7BFF)",
+                        ? "linear-gradient(120deg,#6C7BFF,#5AB8F2)"
+                        : "linear-gradient(120deg,#37D6C0,#6C7BFF)",
                 }}
               >
                 {initials(user.name)}
@@ -515,7 +612,12 @@ export default function Shell({
             <I n="clock" size={12} className="text-aqua-300" />
             <span className="font-display font-bold text-mist-200">{clock}</span>
           </span>
-          <button className="btn btn-ghost !px-3 !py-2" onClick={onHelp} aria-label="Горячие клавиши" title="Горячие клавиши (?)">
+          <button
+            className="btn btn-ghost !px-3 !py-2"
+            onClick={onHelp}
+            aria-label="Горячие клавиши"
+            title="Горячие клавиши (?)"
+          >
             <I n="bolt" size={15} />
           </button>
           <button

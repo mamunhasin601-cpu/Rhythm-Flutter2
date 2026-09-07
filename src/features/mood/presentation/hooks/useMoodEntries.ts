@@ -31,7 +31,12 @@ export function useMoodEntries(filters?: MoodFilters) {
 
   /* поиск (заметка + теги) + фильтры (И между типами, ИЛИ внутри типа) */
   const filtered = useMemo(
-    () => applyFilters(sortDesc(app.moods), filters ?? { states: [], tags: [], sources: [], hasNote: null, hasLinks: null }, query),
+    () =>
+      applyFilters(
+        sortDesc(app.moods),
+        filters ?? { states: [], tags: [], sources: [], hasNote: null, hasLinks: null },
+        query
+      ),
     [app.moods, filters, query]
   );
 
@@ -52,7 +57,12 @@ export function useMoodEntries(filters?: MoodFilters) {
     const today = todayKey();
     return [...map.entries()].map(([date, entries]) => ({
       date,
-      label: date === today ? "Сегодня" : relDayLabel(date) === "Завтра" ? relDayLabel(date) : `${relDayLabel(date)} · ${fmtDateLong(date).split(", ")[1] ?? ""}`,
+      label:
+        date === today
+          ? "Сегодня"
+          : relDayLabel(date) === "Завтра"
+            ? relDayLabel(date)
+            : `${relDayLabel(date)} · ${fmtDateLong(date).split(", ")[1] ?? ""}`,
       entries,
     }));
   }, [shown]);

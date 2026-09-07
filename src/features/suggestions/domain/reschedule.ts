@@ -10,7 +10,10 @@ import type { ProductivityWindow } from "./productivity";
 /** Просроченные задачи: прошлые дни или сегодня, но время уже вышло. */
 export function procrastinatedTasks(tasks: Task[], today = todayKey(), now = nowMin()): Task[] {
   return tasks.filter(
-    (t) => t.status === "todo" && !t.recurrenceRule && (t.date < today || (t.date === today && t.endMin < now - 15))
+    (t) =>
+      t.status === "todo" &&
+      !t.recurrenceRule &&
+      (t.date < today || (t.date === today && t.endMin < now - 15))
   );
 }
 
@@ -104,7 +107,9 @@ export function bestTimeFor(
 export function estimateDuration(tasks: Task[], tags: string[], fallback = 30): number {
   const from = addDaysKey(todayKey(), -13);
   const durations = tasks
-    .filter((t) => t.date >= from && t.status === "done" && tags.length && t.tags.some((x) => tags.includes(x)))
+    .filter(
+      (t) => t.date >= from && t.status === "done" && tags.length && t.tags.some((x) => tags.includes(x))
+    )
     .map((t) => t.endMin - t.startMin)
     .sort((a, b) => a - b);
   if (!durations.length) return fallback;
@@ -121,7 +126,9 @@ export function scheduledMinutes(dayTasks: Task[]): number {
 
 /** §4.6 Задачи, которые переносили 3+ раз (признак «зависания»). */
 export function stuckTasks(tasks: Task[], today = todayKey()): Task[] {
-  return tasks.filter((t) => t.status === "todo" && !t.recurrenceRule && t.date < today && (t.movedCount ?? 0) >= 3);
+  return tasks.filter(
+    (t) => t.status === "todo" && !t.recurrenceRule && t.date < today && (t.movedCount ?? 0) >= 3
+  );
 }
 
 export const fmtWindow = (w: ProductivityWindow) => `${minToHM(w.start)}–${minToHM(w.end)}`;

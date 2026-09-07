@@ -80,7 +80,11 @@ export default function PromptSettingsPanel() {
               <div className="text-[11px] text-mist-500">Мягкое напоминание отметить состояние</div>
             </div>
           </div>
-          <Switch on={s.morningEnabled} onToggle={() => save({ morningEnabled: !s.morningEnabled })} label="Утренний чек-ин" />
+          <Switch
+            on={s.morningEnabled}
+            onToggle={() => save({ morningEnabled: !s.morningEnabled })}
+            label="Утренний чек-ин"
+          />
         </div>
         <div className="mt-3 pl-[42px]">
           <TimeField
@@ -104,7 +108,11 @@ export default function PromptSettingsPanel() {
               <div className="text-[11px] text-mist-500">Предложение подвести итог дня</div>
             </div>
           </div>
-          <Switch on={s.eveningEnabled} onToggle={() => save({ eveningEnabled: !s.eveningEnabled })} label="Вечерняя рефлексия" />
+          <Switch
+            on={s.eveningEnabled}
+            onToggle={() => save({ eveningEnabled: !s.eveningEnabled })}
+            label="Вечерняя рефлексия"
+          />
         </div>
         <div className="mt-3 space-y-2 pl-[42px]">
           <TimeField
@@ -129,7 +137,9 @@ export default function PromptSettingsPanel() {
           </span>
           <div>
             <div className="text-[13px] font-bold text-mist-100">Тихие часы</div>
-            <div className="text-[11px] text-mist-500">В это время напоминаний нет (может переходить через полночь)</div>
+            <div className="text-[11px] text-mist-500">
+              В это время напоминаний нет (может переходить через полночь)
+            </div>
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 pl-[42px]">
@@ -152,7 +162,8 @@ export default function PromptSettingsPanel() {
       </section>
 
       <p className="text-[11px] leading-relaxed text-mist-500">
-        Не больше 2 напоминаний в день, с интервалом от 4 часов, и никогда в тихие часы. Пропуск — это нормально.
+        Не больше 2 напоминаний в день, с интервалом от 4 часов, и никогда в тихие часы. Пропуск — это
+        нормально.
       </p>
     </div>
   );

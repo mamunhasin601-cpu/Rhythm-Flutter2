@@ -76,7 +76,11 @@ function Splash() {
           <span
             key={i}
             className="eq-bar w-[4px] rounded-full"
-            style={{ height: h, background: "linear-gradient(180deg,#9D7BFF,#37D6C0)", animationDelay: `${i * 0.12}s` }}
+            style={{
+              height: h,
+              background: "linear-gradient(180deg,#9D7BFF,#37D6C0)",
+              animationDelay: `${i * 0.12}s`,
+            }}
           />
         ))}
       </div>
@@ -86,7 +90,14 @@ function Splash() {
 }
 
 const KEY_TABS: Record<string, TabId> = {
-  t: "today", f: "flow", r: "rhythm", j: "journal", o: "mood", c: "character", g: "together", i: "insights",
+  t: "today",
+  f: "flow",
+  r: "rhythm",
+  j: "journal",
+  o: "mood",
+  c: "character",
+  g: "together",
+  i: "insights",
 };
 
 function Body() {
@@ -103,7 +114,7 @@ function Body() {
       ...Object.fromEntries(Object.entries(KEY_TABS).map(([k, tab]) => [k, () => app.setTab(tab)])),
       n: () => setModal({ open: true, task: null, draft: { date: todayKey(), startMin: 540 } }),
       m: () => app.openCheckIn(),
-      "ь": () => app.openCheckIn(), // M в русской раскладке
+      ь: () => app.openCheckIn(), // M в русской раскладке
       "?": () => setHelpOpen((v) => !v),
     },
     app.booted && !!app.user && !app.checkInOpen
@@ -128,11 +139,25 @@ function Body() {
     <>
       <div className="rhythm-bg" />
       <DeepLinkBridge />
-      <Shell onNewTask={() => openNew()} onHelp={() => setHelpOpen(true)} helpOpen={helpOpen} onCloseHelp={() => setHelpOpen(false)}>
+      <Shell
+        onNewTask={() => openNew()}
+        onHelp={() => setHelpOpen(true)}
+        helpOpen={helpOpen}
+        onCloseHelp={() => setHelpOpen(false)}
+      >
         <Suspense fallback={<ScreenLoader />}>
-          {app.tab === "today" && <TodayScreen onEdit={openEdit} onNewAt={(date, startMin, endMin) => openNew({ date, startMin, endMin })} />}
+          {app.tab === "today" && (
+            <TodayScreen
+              onEdit={openEdit}
+              onNewAt={(date, startMin, endMin) => openNew({ date, startMin, endMin })}
+            />
+          )}
           {app.tab === "flow" && <FlowScreen />}
-          {app.tab === "rhythm" && <RhythmScreen onPlanSlot={(start, end) => openNew({ date: todayKey(), startMin: start, endMin: end })} />}
+          {app.tab === "rhythm" && (
+            <RhythmScreen
+              onPlanSlot={(start, end) => openNew({ date: todayKey(), startMin: start, endMin: end })}
+            />
+          )}
           {app.tab === "journal" && <JournalScreen />}
           {app.tab === "mood" && <MoodOverviewScreen />}
           {app.tab === "character" && <CharacterScreen />}

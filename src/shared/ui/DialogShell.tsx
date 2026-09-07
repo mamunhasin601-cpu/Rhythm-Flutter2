@@ -76,7 +76,10 @@ export default function DialogShell({
                 <I n={icon} size={16} />
               </span>
             )}
-            <h2 id="dialog-shell-title" className="truncate font-display text-[15px] font-semibold tracking-tight text-mist-50">
+            <h2
+              id="dialog-shell-title"
+              className="truncate font-display text-[15px] font-semibold tracking-tight text-mist-50"
+            >
               {title}
             </h2>
           </div>
@@ -85,7 +88,11 @@ export default function DialogShell({
           </button>
         </div>
         <div className="overflow-y-auto px-5 py-4">{children}</div>
-        {footer && <div className="flex items-center justify-end gap-2.5 border-t border-white/6 px-5 py-3.5">{footer}</div>}
+        {footer && (
+          <div className="flex items-center justify-end gap-2.5 border-t border-white/6 px-5 py-3.5">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -29,7 +29,10 @@ export default function NewInsightBanner() {
     if (!fresh.length) return null;
     const habitNames = new Map(app.routines.map((r) => [r.id, r.title]));
     const top = fresh[0];
-    const text = describeInsight(top, top.signalKey.startsWith("habit:") ? habitNames.get(top.signalKey.slice(6)) : undefined);
+    const text = describeInsight(
+      top,
+      top.signalKey.startsWith("habit:") ? habitNames.get(top.signalKey.slice(6)) : undefined
+    );
     return text;
   }, [userId, app.routines, app.moods, app.tasks, app.focusSessions]);
 
@@ -45,7 +48,9 @@ export default function NewInsightBanner() {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="font-display text-[13px] font-bold text-mist-50">Новое наблюдение готово</span>
-            <span className="chip !text-[9px] !text-aqua-300 !border-aqua-400/25 !bg-aqua-400/10">инсайт</span>
+            <span className="chip !text-[9px] !text-aqua-300 !border-aqua-400/25 !bg-aqua-400/10">
+              инсайт
+            </span>
           </div>
           <p className="mt-0.5 line-clamp-2 text-[12px] leading-relaxed text-mist-300">{fresh.body}</p>
           <div className="mt-2 flex gap-2">

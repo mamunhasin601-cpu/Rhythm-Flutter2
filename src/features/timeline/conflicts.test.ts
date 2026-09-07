@@ -62,7 +62,11 @@ describe("findCollisions — обнаружение пересечений (фи
 
   it("несколько пересечений — все в результате", () => {
     const occ = [C("a", 600, 660), C("b", 650, 700), C("c", 800, 900)];
-    expect(findCollisions(occ, 640, 680).map((x) => x.id).sort()).toEqual(["a", "b"]);
+    expect(
+      findCollisions(occ, 640, 680)
+        .map((x) => x.id)
+        .sort()
+    ).toEqual(["a", "b"]);
   });
 
   it("пустой день — нет коллизий", () => {
@@ -101,7 +105,13 @@ describe("freeSlotOptions — варианты переноса для диал�
     const occ = [T("a", 600, 660), T("b", 720, 780)];
     const opts = freeSlotOptions(occ, 630, 60);
     opts.forEach((o) => {
-      expect(findCollisions(occ.map((t) => ({ ...t, title: "x" })), o.startMin, o.endMin)).toEqual([]);
+      expect(
+        findCollisions(
+          occ.map((t) => ({ ...t, title: "x" })),
+          o.startMin,
+          o.endMin
+        )
+      ).toEqual([]);
     });
   });
 });

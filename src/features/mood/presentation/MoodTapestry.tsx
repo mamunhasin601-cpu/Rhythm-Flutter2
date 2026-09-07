@@ -43,7 +43,14 @@ export default function MoodTapestry() {
     <div className="space-y-4">
       {/* навигация по неделям */}
       <div className="flex items-center justify-between">
-        <button className="btn btn-ghost !px-2.5 !py-1.5" onClick={() => { setAnchor(addDaysKey(dates[0], -7)); setSelectedDay(null); }} aria-label="Предыдущая неделя">
+        <button
+          className="btn btn-ghost !px-2.5 !py-1.5"
+          onClick={() => {
+            setAnchor(addDaysKey(dates[0], -7));
+            setSelectedDay(null);
+          }}
+          aria-label="Предыдущая неделя"
+        >
           <I n="chevronRight" size={15} className="rotate-180" />
         </button>
         <div className="text-center">
@@ -51,12 +58,25 @@ export default function MoodTapestry() {
             {fmtDateShort(dates[0])} — {fmtDateShort(dates[6])}
           </span>
           {!isCurrentWeek && (
-            <button className="ml-2 text-[11px] font-bold text-vio-300 hover:text-vio-400" onClick={() => { setAnchor(todayKey()); setSelectedDay(null); }}>
+            <button
+              className="ml-2 text-[11px] font-bold text-vio-300 hover:text-vio-400"
+              onClick={() => {
+                setAnchor(todayKey());
+                setSelectedDay(null);
+              }}
+            >
               к текущей
             </button>
           )}
         </div>
-        <button className="btn btn-ghost !px-2.5 !py-1.5" onClick={() => { setAnchor(addDaysKey(dates[0], 7)); setSelectedDay(null); }} aria-label="Следующая неделя">
+        <button
+          className="btn btn-ghost !px-2.5 !py-1.5"
+          onClick={() => {
+            setAnchor(addDaysKey(dates[0], 7));
+            setSelectedDay(null);
+          }}
+          aria-label="Следующая неделя"
+        >
           <I n="chevronRight" size={15} />
         </button>
       </div>
@@ -79,10 +99,14 @@ export default function MoodTapestry() {
                     sel ? "bg-vio-400/15" : "hover:bg-white/[0.04]"
                   }`}
                 >
-                  <div className={`text-[10px] font-extrabold uppercase tracking-wider ${isToday ? "text-aqua-300" : "text-mist-500"}`}>
+                  <div
+                    className={`text-[10px] font-extrabold uppercase tracking-wider ${isToday ? "text-aqua-300" : "text-mist-500"}`}
+                  >
                     {weekdayShort(d)}
                   </div>
-                  <div className={`text-[12px] font-bold ${sel ? "text-vio-300" : isToday ? "text-aqua-300" : "text-mist-300"}`}>
+                  <div
+                    className={`text-[12px] font-bold ${sel ? "text-vio-300" : isToday ? "text-aqua-300" : "text-mist-300"}`}
+                  >
                     {keyToDate(d).getDate()}
                   </div>
                 </button>
@@ -104,11 +128,18 @@ export default function MoodTapestry() {
                     className={`flex h-[52px] items-center justify-center rounded-lg border transition ${
                       selectedDay === d ? "border-vio-400/25" : "border-white/4"
                     } ${m ? "bg-white/[0.03]" : "bg-white/[0.01]"}`}
-                    title={m ? `${weekdayShort(d)}, ${SLOT_LABEL[slot].toLowerCase()}: ${moodLabel(m.mood)} в ${minToHM(m.timeMin)}` : "Нет записи"}
+                    title={
+                      m
+                        ? `${weekdayShort(d)}, ${SLOT_LABEL[slot].toLowerCase()}: ${moodLabel(m.mood)} в ${minToHM(m.timeMin)}`
+                        : "Нет записи"
+                    }
                   >
                     {m ? (
                       <button
-                        onClick={() => { openDay(d); setDetail(m); }}
+                        onClick={() => {
+                          openDay(d);
+                          setDetail(m);
+                        }}
                         aria-label={`${weekdayShort(d)}, ${SLOT_LABEL[slot].toLowerCase()}: ${moodLabel(m.mood)}`}
                         className="transition-transform hover:scale-110"
                       >
@@ -157,7 +188,11 @@ export default function MoodTapestry() {
         </div>
       )}
 
-      <DetailView entry={detail} onClose={() => setDetail(null)} onOpenEntry={(id) => setDetail(app.moods.find((m) => m.id === id) ?? null)} />
+      <DetailView
+        entry={detail}
+        onClose={() => setDetail(null)}
+        onOpenEntry={(id) => setDetail(app.moods.find((m) => m.id === id) ?? null)}
+      />
     </div>
   );
 }

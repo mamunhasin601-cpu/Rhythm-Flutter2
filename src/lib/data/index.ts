@@ -12,9 +12,7 @@ import { createLocalProvider } from "./localProvider";
 import { createSupabaseProvider } from "./supabaseProvider";
 import type { DataProvider } from "./types";
 
-export const data: DataProvider = isSupabaseConfigured
-  ? createSupabaseProvider()
-  : createLocalProvider();
+export const data: DataProvider = isSupabaseConfigured ? createSupabaseProvider() : createLocalProvider();
 
 export const isSupabaseMode: boolean = data.kind === "supabase";
 

@@ -90,7 +90,14 @@ export default function ExportPdfDialog({ open, onClose }: { open: boolean; onCl
     document.body.appendChild(frame);
 
     /* только факт, не содержимое */
-    db.insertExportLog({ id: uid(), userId: user.id, kind: "pdf", count: entries.length, period: bounds.label, createdAt: Date.now() });
+    db.insertExportLog({
+      id: uid(),
+      userId: user.id,
+      kind: "pdf",
+      count: entries.length,
+      period: bounds.label,
+      createdAt: Date.now(),
+    });
     void db.commit();
     setDone(true);
     window.setTimeout(() => {
@@ -109,7 +116,9 @@ export default function ExportPdfDialog({ open, onClose }: { open: boolean; onCl
       footer={
         !done ? (
           <>
-            <button className="btn btn-ghost" onClick={onClose}>Отмена</button>
+            <button className="btn btn-ghost" onClick={onClose}>
+              Отмена
+            </button>
             <button className="btn btn-primary" onClick={doExport} disabled={!entries.length}>
               <I n="file" size={14} /> Сформировать PDF
             </button>
@@ -122,8 +131,12 @@ export default function ExportPdfDialog({ open, onClose }: { open: boolean; onCl
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ok/15 text-ok">
             <I n="check" size={22} sw={2.4} />
           </span>
-          <p className="mt-3 text-[13px] font-bold text-mist-50">Откройте «Сохранить как PDF» в диалоге печати</p>
-          <p className="mt-1 text-[11.5px] font-semibold text-mist-500">Отчёт сформирован локально, без отправки на сервер</p>
+          <p className="mt-3 text-[13px] font-bold text-mist-50">
+            Откройте «Сохранить как PDF» в диалоге печати
+          </p>
+          <p className="mt-1 text-[11.5px] font-semibold text-mist-500">
+            Отчёт сформирован локально, без отправки на сервер
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -140,10 +153,14 @@ export default function ExportPdfDialog({ open, onClose }: { open: boolean; onCl
                     aria-checked={on}
                     onClick={() => setPeriod(o.id)}
                     className={`flex items-center justify-between rounded-lg border px-3.5 py-2.5 text-left transition ${
-                      on ? "border-vio-400/50 bg-vio-400/10" : "border-white/8 bg-white/[0.02] hover:border-white/18"
+                      on
+                        ? "border-vio-400/50 bg-vio-400/10"
+                        : "border-white/8 bg-white/[0.02] hover:border-white/18"
                     }`}
                   >
-                    <span className={`text-[13px] font-bold ${on ? "text-mist-50" : "text-mist-300"}`}>{o.label}</span>
+                    <span className={`text-[13px] font-bold ${on ? "text-mist-50" : "text-mist-300"}`}>
+                      {o.label}
+                    </span>
                     {on && <I n="check" size={14} className="text-vio-300" />}
                   </button>
                 );
@@ -153,7 +170,9 @@ export default function ExportPdfDialog({ open, onClose }: { open: boolean; onCl
 
           <div className="rounded-xl border border-white/8 bg-white/[0.02] px-4 py-3">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-mist-500">{bounds.label}</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-mist-500">
+                {bounds.label}
+              </span>
               <span className="font-display text-[15px] font-bold text-mist-50">
                 {entries.length} {plural(entries.length, "запись", "записи", "записей")}
               </span>
@@ -166,7 +185,8 @@ export default function ExportPdfDialog({ open, onClose }: { open: boolean; onCl
 
           {entries.length > 0 && (
             <p className="text-[11px] font-semibold text-mist-500">
-              Первая запись: {fmtDateLong(entries[0].date)} · последняя: {fmtDateLong(entries[entries.length - 1].date)}
+              Первая запись: {fmtDateLong(entries[0].date)} · последняя:{" "}
+              {fmtDateLong(entries[entries.length - 1].date)}
             </p>
           )}
         </div>

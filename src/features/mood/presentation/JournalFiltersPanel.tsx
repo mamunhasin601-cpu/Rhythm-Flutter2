@@ -37,7 +37,11 @@ function TriState({
   return (
     <div>
       <span className="label">{label}</span>
-      <div className="inline-flex gap-[3px] rounded-[9px] border border-white/8 bg-ink-800 p-[3px]" role="group" aria-label={label}>
+      <div
+        className="inline-flex gap-[3px] rounded-[9px] border border-white/8 bg-ink-800 p-[3px]"
+        role="group"
+        aria-label={label}
+      >
         {opts.map((o) => (
           <button
             key={String(o.v)}
@@ -71,11 +75,17 @@ export default function JournalFiltersPanel({
   const set = (p: Partial<MoodFilters>) => onChange({ ...filters, ...p });
 
   const toggleState = (score: number) =>
-    set({ states: filters.states.includes(score) ? filters.states.filter((x) => x !== score) : [...filters.states, score] });
+    set({
+      states: filters.states.includes(score)
+        ? filters.states.filter((x) => x !== score)
+        : [...filters.states, score],
+    });
   const toggleTag = (t: string) =>
     set({ tags: filters.tags.includes(t) ? filters.tags.filter((x) => x !== t) : [...filters.tags, t] });
   const toggleSource = (s: MoodSource) =>
-    set({ sources: filters.sources.includes(s) ? filters.sources.filter((x) => x !== s) : [...filters.sources, s] });
+    set({
+      sources: filters.sources.includes(s) ? filters.sources.filter((x) => x !== s) : [...filters.sources, s],
+    });
 
   return (
     <section className="anim-rise d-1 card px-4 py-3.5" aria-label="Фильтры журнала">
@@ -91,7 +101,12 @@ export default function JournalFiltersPanel({
             Найдено: <b className="font-display text-[13px] text-mist-50">{total}</b>{" "}
             {plural(total, "запись", "записи", "записей")}
           </span>
-          <button className="btn btn-ghost !px-2.5 !py-1 !text-[11px]" onClick={() => onChange(EMPTY_FILTERS)} disabled={!active} aria-label="Сбросить фильтры">
+          <button
+            className="btn btn-ghost !px-2.5 !py-1 !text-[11px]"
+            onClick={() => onChange(EMPTY_FILTERS)}
+            disabled={!active}
+            aria-label="Сбросить фильтры"
+          >
             <I n="x" size={11} /> Сбросить
           </button>
         </div>
@@ -112,11 +127,15 @@ export default function JournalFiltersPanel({
                   title={s.label}
                   onClick={() => toggleState(s.score)}
                   className={`flex flex-col items-center gap-0.5 rounded-lg border px-1.5 py-1.5 transition ${
-                    on ? "border-vio-400/50 bg-vio-400/12" : "border-white/8 bg-white/[0.02] hover:border-white/20"
+                    on
+                      ? "border-vio-400/50 bg-vio-400/12"
+                      : "border-white/8 bg-white/[0.02] hover:border-white/20"
                   }`}
                 >
                   <MoodFace level={s.score} size={20} active={on} />
-                  <span className={`text-[8.5px] font-bold ${on ? "text-vio-300" : "text-mist-500"}`}>{s.label.split(" ")[0]}</span>
+                  <span className={`text-[8.5px] font-bold ${on ? "text-vio-300" : "text-mist-500"}`}>
+                    {s.label.split(" ")[0]}
+                  </span>
                 </button>
               );
             })}
@@ -128,11 +147,21 @@ export default function JournalFiltersPanel({
           <div>
             <span className="label">Даты</span>
             <div className="flex items-center gap-1.5">
-              <input type="date" className="input !w-[132px] !py-1 !text-[11.5px]" value={filters.dateFrom ?? ""} aria-label="С даты"
-                onChange={(e) => set({ dateFrom: e.target.value || undefined })} />
+              <input
+                type="date"
+                className="input !w-[132px] !py-1 !text-[11.5px]"
+                value={filters.dateFrom ?? ""}
+                aria-label="С даты"
+                onChange={(e) => set({ dateFrom: e.target.value || undefined })}
+              />
               <span className="text-[11px] font-bold text-mist-500">—</span>
-              <input type="date" className="input !w-[132px] !py-1 !text-[11.5px]" value={filters.dateTo ?? ""} aria-label="По дату"
-                onChange={(e) => set({ dateTo: e.target.value || undefined })} />
+              <input
+                type="date"
+                className="input !w-[132px] !py-1 !text-[11.5px]"
+                value={filters.dateTo ?? ""}
+                aria-label="По дату"
+                onChange={(e) => set({ dateTo: e.target.value || undefined })}
+              />
             </div>
           </div>
           <div className="flex flex-wrap gap-x-6 gap-y-3">
@@ -150,8 +179,13 @@ export default function JournalFiltersPanel({
                 {availableTags.slice(0, 12).map((t) => {
                   const on = filters.tags.includes(t);
                   return (
-                    <button key={t} type="button" aria-pressed={on} onClick={() => toggleTag(t)}
-                      className={`chip cursor-pointer transition ${on ? "!border-vio-400/45 !bg-vio-400/14 !text-vio-300" : "hover:!border-white/20"}`}>
+                    <button
+                      key={t}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => toggleTag(t)}
+                      className={`chip cursor-pointer transition ${on ? "!border-vio-400/45 !bg-vio-400/14 !text-vio-300" : "hover:!border-white/20"}`}
+                    >
                       #{t}
                     </button>
                   );
@@ -165,8 +199,13 @@ export default function JournalFiltersPanel({
               {SOURCE_META.map((s) => {
                 const on = filters.sources.includes(s.id);
                 return (
-                  <button key={s.id} type="button" aria-pressed={on} onClick={() => toggleSource(s.id)}
-                    className={`chip cursor-pointer transition ${on ? "!border-aqua-400/45 !bg-aqua-400/12 !text-aqua-300" : "hover:!border-white/20"}`}>
+                  <button
+                    key={s.id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => toggleSource(s.id)}
+                    className={`chip cursor-pointer transition ${on ? "!border-aqua-400/45 !bg-aqua-400/12 !text-aqua-300" : "hover:!border-white/20"}`}
+                  >
                     {s.label}
                   </button>
                 );

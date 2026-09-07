@@ -25,7 +25,7 @@ export function createLocalProvider(): DataProvider {
 
     async getSession() {
       const sid = sessionStore.read();
-      const u = sid ? db.get().users.find((x) => x.id === sid) ?? null : null;
+      const u = sid ? (db.get().users.find((x) => x.id === sid) ?? null) : null;
       return u ? toAuthUser(u) : null;
     },
 
@@ -38,9 +38,17 @@ export function createLocalProvider(): DataProvider {
       await delay(700);
       if (db.findUserByEmail(email)) return { error: "Аккаунт с такой почтой уже существует" };
       const user: User = {
-        id: uid(), name, email, passHash: demoHash(password), provider: "email",
-        accent: "violet", sleepHours: 7.5, createdAt: new Date().toISOString(),
-        themePalette: "default", quietFrom: 22 * 60, quietTo: 8 * 60,
+        id: uid(),
+        name,
+        email,
+        passHash: demoHash(password),
+        provider: "email",
+        accent: "violet",
+        sleepHours: 7.5,
+        createdAt: new Date().toISOString(),
+        themePalette: "default",
+        quietFrom: 22 * 60,
+        quietTo: 8 * 60,
         notifications: { ...DEFAULT_PREFS },
       };
       db.insertUser(user);
@@ -66,10 +74,16 @@ export function createLocalProvider(): DataProvider {
       let user = db.findUserByEmail(email);
       if (!user) {
         user = {
-          id: uid(), name: "Alex Day", email, provider,
-          accent: provider === "google" ? "indigo" : "aqua", sleepHours: 7.5,
+          id: uid(),
+          name: "Alex Day",
+          email,
+          provider,
+          accent: provider === "google" ? "indigo" : "aqua",
+          sleepHours: 7.5,
           createdAt: new Date().toISOString(),
-          themePalette: "default", quietFrom: 22 * 60, quietTo: 8 * 60,
+          themePalette: "default",
+          quietFrom: 22 * 60,
+          quietTo: 8 * 60,
           notifications: { ...DEFAULT_PREFS },
         };
         db.insertUser(user);

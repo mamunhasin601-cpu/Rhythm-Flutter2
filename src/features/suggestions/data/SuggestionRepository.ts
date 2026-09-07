@@ -132,7 +132,11 @@ export function recompute(userId: string, nowMin: number, today: string): Sugges
 
   /* 1) протухшие (TTL) и вчерашние → expired */
   for (const s of db.suggestionsOf(userId)) {
-    if ((s.state === "created" || s.state === "shown" || s.state === "snoozed") && s.expiresAt && s.expiresAt < now) {
+    if (
+      (s.state === "created" || s.state === "shown" || s.state === "snoozed") &&
+      s.expiresAt &&
+      s.expiresAt < now
+    ) {
       db.updateSuggestion({ ...s, state: "expired" });
     }
   }
@@ -149,11 +153,15 @@ export function recompute(userId: string, nowMin: number, today: string): Sugges
   /* 4) уже активные (не дублируем) */
   const existing = db.suggestionsOf(userId);
   const activeKeys = new Set(
-    existing.filter((s) => s.state === "created" || s.state === "shown" || s.state === "snoozed").map((s) => s.dedupKey)
+    existing
+      .filter((s) => s.state === "created" || s.state === "shown" || s.state === "snoozed")
+      .map((s) => s.dedupKey)
   );
 
   /* 5) дневной лимит показов */
-  const shownToday = existing.filter((s) => s.shownAt && new Date(s.shownAt).toDateString() === new Date(now).toDateString()).length;
+  const shownToday = existing.filter(
+    (s) => s.shownAt && new Date(s.shownAt).toDateString() === new Date(now).toDateString()
+  ).length;
   let budget = Math.max(0, rules.dailyShownLimit - shownToday);
 
   /* 6) фильтр и персист новых */
@@ -215,11 +223,7 @@ export function visible(userId: string, nowMin: number, max = DEFAULT_RULES.maxA
 }
 
 /** Действие пользователя → смена состояния + фидбек + пересчёт весов. */
-export function act(
-  userId: string,
-  id: string,
-  action: SuggestionFeedback["action"]
-): Suggestion[] {
+export function act(userId: string, id: string, action: SuggestionFeedback["action"]): Suggestion[] {
   const now = Date.now();
   const s = db.suggestionsOf(userId).find((x) => x.id === id);
   if (!s) return db.suggestionsOf(userId);

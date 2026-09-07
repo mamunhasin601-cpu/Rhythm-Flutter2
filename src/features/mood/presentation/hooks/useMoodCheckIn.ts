@@ -5,13 +5,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useApp } from "../../../../state/store";
-import {
-  MAX_TAGS,
-  NOTE_LIMIT,
-  clampNote,
-  moodLabel,
-  normalizeTags,
-} from "../../domain/moodService";
+import { MAX_TAGS, NOTE_LIMIT, clampNote, moodLabel, normalizeTags } from "../../domain/moodService";
 import { hmToMin, minToHM, nowMin, todayKey } from "../../../../lib/time";
 import type { Task } from "../../../../lib/types";
 
@@ -25,7 +19,7 @@ export function nearbyTasks(tasks: Task[], date: string, timeMin: number): Task[
 export function useMoodCheckIn() {
   const app = useApp();
   const editing = useMemo(
-    () => (app.checkInEditId ? app.moods.find((m) => m.id === app.checkInEditId) ?? null : null),
+    () => (app.checkInEditId ? (app.moods.find((m) => m.id === app.checkInEditId) ?? null) : null),
     [app.checkInEditId, app.moods]
   );
 
@@ -77,7 +71,8 @@ export function useMoodCheckIn() {
   );
 
   const toggleLink = useCallback(
-    (id: string) => setLinkedTaskIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])),
+    (id: string) =>
+      setLinkedTaskIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])),
     []
   );
 

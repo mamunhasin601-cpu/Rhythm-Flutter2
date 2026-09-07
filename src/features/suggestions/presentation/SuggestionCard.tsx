@@ -64,10 +64,7 @@ export default function SuggestionCard({
             {timeHint && <b className="text-aqua-300"> {timeHint}</b>}
           </p>
           <div className="mt-2 flex items-center gap-1.5">
-            <button
-              onClick={() => onAccept(s.id)}
-              className="btn btn-primary !px-2.5 !py-1 !text-[11px]"
-            >
+            <button onClick={() => onAccept(s.id)} className="btn btn-primary !px-2.5 !py-1 !text-[11px]">
               <I n="check" size={11} sw={2.6} /> Принять
             </button>
             <button
@@ -77,11 +74,7 @@ export default function SuggestionCard({
             >
               <I n="x" size={11} /> Отклонить
             </button>
-            <button
-              onClick={() => onSnooze(s.id)}
-              className="iconbtn !h-6 !w-6"
-              title="Отложить на 2 часа"
-            >
+            <button onClick={() => onSnooze(s.id)} className="iconbtn !h-6 !w-6" title="Отложить на 2 часа">
               <I n="clock" size={12} />
             </button>
             <span className="ml-auto text-[9px] font-bold uppercase tracking-wider text-mist-500">

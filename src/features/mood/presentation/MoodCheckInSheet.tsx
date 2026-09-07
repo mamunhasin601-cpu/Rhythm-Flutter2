@@ -77,12 +77,24 @@ export default function MoodCheckInSheet() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label="Отметить настроение" data-testid="checkin-sheet">
-      <div className="anim-fade absolute inset-0 bg-ink-950/75 backdrop-blur-[3px]" onClick={app.closeCheckIn} />
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Отметить настроение"
+      data-testid="checkin-sheet"
+    >
+      <div
+        className="anim-fade absolute inset-0 bg-ink-950/75 backdrop-blur-[3px]"
+        onClick={app.closeCheckIn}
+      />
 
       <div
         className={`relative w-full max-w-md overflow-hidden rounded-t-2xl border border-white/8 bg-ink-900 shadow-2xl sm:rounded-2xl ${reduceMotion() ? "anim-fade" : "sheet-up"}`}
-        style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0) 40%), var(--color-ink-900)" }}
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0) 40%), var(--color-ink-900)",
+        }}
       >
         {/* success-вспышка */}
         {success && (
@@ -100,7 +112,13 @@ export default function MoodCheckInSheet() {
         <div className="flex items-center justify-between border-b border-white/6 px-5 py-4">
           <div>
             <h2 className="font-display text-[15px] font-semibold tracking-tight text-mist-50">
-              {f.editing ? "Редактировать запись" : f.source === "morning" ? "Как ты этим утром?" : f.source === "evening" ? "Как прошёл день?" : "Как ты сейчас?"}
+              {f.editing
+                ? "Редактировать запись"
+                : f.source === "morning"
+                  ? "Как ты этим утром?"
+                  : f.source === "evening"
+                    ? "Как прошёл день?"
+                    : "Как ты сейчас?"}
             </h2>
             <p className="mt-0.5 text-[11px] font-semibold text-mist-500">
               {f.editing ? "Состояние — сигнал, а не оценка" : "Настроение — сигнал, а не оценка"}
@@ -143,7 +161,10 @@ export default function MoodCheckInSheet() {
           </div>
 
           {/* динамическая подпись (hover / long-press / выбранное) */}
-          <p className="mt-2 min-h-[18px] text-center text-[11.5px] font-semibold text-mist-400" aria-live="polite">
+          <p
+            className="mt-2 min-h-[18px] text-center text-[11.5px] font-semibold text-mist-400"
+            aria-live="polite"
+          >
             {hintLine}
           </p>
 
@@ -162,7 +183,9 @@ export default function MoodCheckInSheet() {
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
                   <span className="label !mb-0">Заметка</span>
-                  <span className="text-[10px] font-bold text-mist-500">{f.note.length}/{f.noteLimit}</span>
+                  <span className="text-[10px] font-bold text-mist-500">
+                    {f.note.length}/{f.noteLimit}
+                  </span>
                 </div>
                 <textarea
                   className="input min-h-[64px] resize-y !text-[13px]"
@@ -177,7 +200,9 @@ export default function MoodCheckInSheet() {
 
               {/* теги */}
               <div>
-                <span className="label">Теги · {f.tags.length}/{f.maxTags}</span>
+                <span className="label">
+                  Теги · {f.tags.length}/{f.maxTags}
+                </span>
                 <div className="flex flex-wrap gap-1.5">
                   {TAG_PRESETS.map((t) => {
                     const on = f.tags.includes(t);
@@ -209,7 +234,11 @@ export default function MoodCheckInSheet() {
                     }}
                   />
                   {f.tagInput.trim() && (
-                    <button className="btn btn-soft !px-2.5 !py-1.5" onClick={() => f.addTag(f.tagInput)} aria-label="Добавить тег">
+                    <button
+                      className="btn btn-soft !px-2.5 !py-1.5"
+                      onClick={() => f.addTag(f.tagInput)}
+                      aria-label="Добавить тег"
+                    >
                       <I n="plus" size={13} />
                     </button>
                   )}
@@ -244,7 +273,9 @@ export default function MoodCheckInSheet() {
                       </button>
                     ))}
                   </div>
-                  <p className="mt-1 text-[10px] font-semibold text-mist-500">Рядом по времени — тапни, чтобы связать</p>
+                  <p className="mt-1 text-[10px] font-semibold text-mist-500">
+                    Рядом по времени — тапни, чтобы связать
+                  </p>
                 </div>
               )}
 
@@ -252,11 +283,21 @@ export default function MoodCheckInSheet() {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <span className="label">Дата</span>
-                  <input type="date" className="input !py-1.5 !text-[12px]" value={f.date} onChange={(e) => e.target.value && f.setDate(e.target.value)} />
+                  <input
+                    type="date"
+                    className="input !py-1.5 !text-[12px]"
+                    value={f.date}
+                    onChange={(e) => e.target.value && f.setDate(e.target.value)}
+                  />
                 </div>
                 <div>
                   <span className="label">Время</span>
-                  <input type="time" className="input !py-1.5 !text-[12px]" value={f.time} onChange={(e) => e.target.value && f.setTime(e.target.value)} />
+                  <input
+                    type="time"
+                    className="input !py-1.5 !text-[12px]"
+                    value={f.time}
+                    onChange={(e) => e.target.value && f.setTime(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -269,7 +310,9 @@ export default function MoodCheckInSheet() {
             <span className="chip !border-vio-400/30 !bg-vio-400/10 !text-vio-300">{moodLabel(f.mood)}</span>
           )}
           <div className="ml-auto flex gap-2">
-            <button className="btn btn-ghost" onClick={app.closeCheckIn}>Отмена</button>
+            <button className="btn btn-ghost" onClick={app.closeCheckIn}>
+              Отмена
+            </button>
             <button
               className="btn btn-primary"
               disabled={!f.canSave}

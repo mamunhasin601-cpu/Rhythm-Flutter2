@@ -15,7 +15,10 @@ export function useHotkeys(map: Record<string, () => void>, enabled = true) {
       const el = e.target as HTMLElement | null;
       if (
         el &&
-        (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable)
+        (el.tagName === "INPUT" ||
+          el.tagName === "TEXTAREA" ||
+          el.tagName === "SELECT" ||
+          el.isContentEditable)
       ) {
         return;
       }

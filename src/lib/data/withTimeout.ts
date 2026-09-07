@@ -14,7 +14,10 @@ export function withTimeout<T>(promise: Promise<T>, ms: number, label = "опе�
   let timer: number | undefined;
   const timeout = new Promise<never>((_, reject) => {
     timer = window.setTimeout(
-      () => reject(new Error(`${label}: превышено время ожидания (${Math.round(ms / 1000)} с) — проверьте соединение`)),
+      () =>
+        reject(
+          new Error(`${label}: превышено время ожидания (${Math.round(ms / 1000)} с) — проверьте соединение`)
+        ),
       ms
     );
   });

@@ -34,9 +34,21 @@ export const googleProvider: CalendarProvider = {
     const today = todayKey();
     const tomorrow = addDaysKey(today, 1);
     return [
-      { externalId: "gcal_standup", title: "Стендап с клиентом", date: today, startMin: 16 * 60 + 30, endMin: 17 * 60 },
+      {
+        externalId: "gcal_standup",
+        title: "Стендап с клиентом",
+        date: today,
+        startMin: 16 * 60 + 30,
+        endMin: 17 * 60,
+      },
       { externalId: "gcal_dentist", title: "Стоматолог", date: tomorrow, startMin: 11 * 60, endMin: 12 * 60 },
-      { externalId: "gcal_yoga", title: "Йога-класс", date: addDaysKey(today, 2), startMin: 8 * 60, endMin: 9 * 60 },
+      {
+        externalId: "gcal_yoga",
+        title: "Йога-класс",
+        date: addDaysKey(today, 2),
+        startMin: 8 * 60,
+        endMin: 9 * 60,
+      },
     ];
   },
 

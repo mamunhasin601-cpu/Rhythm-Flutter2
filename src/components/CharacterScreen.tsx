@@ -38,7 +38,11 @@ export default function CharacterScreen() {
     const progress = (xp - curBase) / (nextBase - curBase);
 
     return {
-      xp, level, progress, streak, doneCount: done.length,
+      xp,
+      level,
+      progress,
+      streak,
+      doneCount: done.length,
       focus: Math.min(100, highDone * 9),
       energy: Math.round(avgMood * 20),
       balance: Math.min(100, restDone * 8),
@@ -52,14 +56,56 @@ export default function CharacterScreen() {
     const early = done.some((t) => t.endMin <= 9 * 60);
     const deep = done.filter((t) => t.energy === "high").length;
     const list: { icon: IconName; title: string; desc: string; ok: boolean; prog: string }[] = [
-      { icon: "spark", title: "Первый шаг", desc: "Выполни первую задачу", ok: stats.doneCount >= 1, prog: `${Math.min(1, stats.doneCount)}/1` },
-      { icon: "target", title: "Десятка", desc: "10 выполненных задач", ok: stats.doneCount >= 10, prog: `${Math.min(10, stats.doneCount)}/10` },
-      { icon: "flame", title: "В ритме", desc: "Серия 5 дней подряд", ok: stats.streak >= 5, prog: `${Math.min(5, stats.streak)}/5` },
-      { icon: "sun", title: "Ранняя пташка", desc: "Задача закрыта до 09:00", ok: early, prog: early ? "1/1" : "0/1" },
-      { icon: "bolt", title: "Глубокий фокус", desc: "15 задач с high-энергией", ok: deep >= 15, prog: `${Math.min(15, deep)}/15` },
-      { icon: "heart", title: "Баланс", desc: "10 задач отдыха и здоровья", ok: stats.balance >= 80, prog: `${Math.min(10, Math.round(stats.balance / 8))}/10` },
+      {
+        icon: "spark",
+        title: "Первый шаг",
+        desc: "Выполни первую задачу",
+        ok: stats.doneCount >= 1,
+        prog: `${Math.min(1, stats.doneCount)}/1`,
+      },
+      {
+        icon: "target",
+        title: "Десятка",
+        desc: "10 выполненных задач",
+        ok: stats.doneCount >= 10,
+        prog: `${Math.min(10, stats.doneCount)}/10`,
+      },
+      {
+        icon: "flame",
+        title: "В ритме",
+        desc: "Серия 5 дней подряд",
+        ok: stats.streak >= 5,
+        prog: `${Math.min(5, stats.streak)}/5`,
+      },
+      {
+        icon: "sun",
+        title: "Ранняя пташка",
+        desc: "Задача закрыта до 09:00",
+        ok: early,
+        prog: early ? "1/1" : "0/1",
+      },
+      {
+        icon: "bolt",
+        title: "Глубокий фокус",
+        desc: "15 задач с high-энергией",
+        ok: deep >= 15,
+        prog: `${Math.min(15, deep)}/15`,
+      },
+      {
+        icon: "heart",
+        title: "Баланс",
+        desc: "10 задач отдыха и здоровья",
+        ok: stats.balance >= 80,
+        prog: `${Math.min(10, Math.round(stats.balance / 8))}/10`,
+      },
       { icon: "users", title: "Вместе", desc: "Проведи sync-сессию", ok: false, prog: "0/1" },
-      { icon: "chart", title: "Аналитик", desc: "Неделя с 20+ задачами", ok: false, prog: `${Math.min(20, stats.doneCount)}/20` },
+      {
+        icon: "chart",
+        title: "Аналитик",
+        desc: "Неделя с 20+ задачами",
+        ok: false,
+        prog: `${Math.min(20, stats.doneCount)}/20`,
+      },
     ];
     return list;
   }, [app.tasks, stats]);
@@ -82,7 +128,14 @@ export default function CharacterScreen() {
       <section className="anim-rise card relative overflow-hidden p-6 text-center">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-vio-400/12 to-transparent" />
         <div className="relative mx-auto h-[132px] w-[132px]">
-          <div className="absolute inset-0 rounded-full" style={{ background: "conic-gradient(#9D7BFF,#6C7BFF,#37D6C0,#9D7BFF)", animation: "spin360 14s linear infinite", opacity: 0.85 }} />
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: "conic-gradient(#9D7BFF,#6C7BFF,#37D6C0,#9D7BFF)",
+              animation: "spin360 14s linear infinite",
+              opacity: 0.85,
+            }}
+          />
           <div className="absolute inset-[5px] flex items-center justify-center rounded-full bg-ink-900">
             <div className="grad-brand flex h-[104px] w-[104px] items-center justify-center rounded-full font-display text-[34px] font-bold text-white shadow-2xl">
               {initials(user.name)}
@@ -99,7 +152,9 @@ export default function CharacterScreen() {
         <div className="mt-4">
           <div className="mb-1.5 flex justify-between text-[11px] font-bold">
             <span className="text-mist-500">{stats.xp} XP</span>
-            <span className="text-vio-300">до ур. {stats.level + 1}: {Math.max(0, 60 * stats.level ** 2 - stats.xp)} XP</span>
+            <span className="text-vio-300">
+              до ур. {stats.level + 1}: {Math.max(0, 60 * stats.level ** 2 - stats.xp)} XP
+            </span>
           </div>
           <Bar value={stats.progress * 100} h={8} />
         </div>
@@ -122,7 +177,9 @@ export default function CharacterScreen() {
         {/* -------- статы -------- */}
         <section className="anim-rise d-1 card p-5">
           <h3 className="font-display text-[15px] font-bold tracking-tight text-mist-50">Статы персонажа</h3>
-          <p className="mt-0.5 text-[12px] text-mist-400">Растут от реальных действий: задач, чек-инов, фокуса.</p>
+          <p className="mt-0.5 text-[12px] text-mist-400">
+            Растут от реальных действий: задач, чек-инов, фокуса.
+          </p>
           <div className="mt-4 grid gap-x-8 gap-y-4 sm:grid-cols-2">
             {statRows.map((s) => (
               <div key={s.label}>
@@ -149,10 +206,17 @@ export default function CharacterScreen() {
               <span className="chip !text-warn !border-warn/25 !bg-warn/10">+150 XP</span>
             </div>
             <p className="text-[12px] text-mist-400">Выполни 20 задач до воскресенья</p>
-            <Bar className="mt-2" value={(weekTasks / 20) * 100} color="linear-gradient(90deg,#F0B45A,#F2687C)" />
+            <Bar
+              className="mt-2"
+              value={(weekTasks / 20) * 100}
+              color="linear-gradient(90deg,#F0B45A,#F2687C)"
+            />
           </div>
           <div className="text-right">
-            <div className="font-display text-[22px] font-bold text-mist-50">{weekTasks}<span className="text-[13px] text-mist-500">/20</span></div>
+            <div className="font-display text-[22px] font-bold text-mist-50">
+              {weekTasks}
+              <span className="text-[13px] text-mist-500">/20</span>
+            </div>
             <div className="text-[10px] font-bold uppercase tracking-wider text-mist-500">задач</div>
           </div>
         </section>
@@ -160,7 +224,10 @@ export default function CharacterScreen() {
         {/* -------- ачивки -------- */}
         <section className="anim-rise d-3 card p-5">
           <h3 className="font-display text-[15px] font-bold tracking-tight text-mist-50">
-            Достижения <span className="ml-1 text-[12px] font-semibold text-mist-500">{achievements.filter((a) => a.ok).length} из {achievements.length}</span>
+            Достижения{" "}
+            <span className="ml-1 text-[12px] font-semibold text-mist-500">
+              {achievements.filter((a) => a.ok).length} из {achievements.length}
+            </span>
           </h3>
           <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
             {achievements.map((a) => (
@@ -173,7 +240,9 @@ export default function CharacterScreen() {
                 }`}
                 title={a.desc}
               >
-                <div className={`mx-auto flex h-10 w-10 items-center justify-center rounded-xl ${a.ok ? "bg-aqua-400/15 text-aqua-300" : "bg-white/5 text-mist-500"}`}>
+                <div
+                  className={`mx-auto flex h-10 w-10 items-center justify-center rounded-xl ${a.ok ? "bg-aqua-400/15 text-aqua-300" : "bg-white/5 text-mist-500"}`}
+                >
                   <I n={a.icon} size={18} />
                 </div>
                 <div className="mt-2 text-[11.5px] font-extrabold text-mist-100">{a.title}</div>

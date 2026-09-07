@@ -84,32 +84,44 @@ export function useMoodInsights() {
     () =>
       selection.active.map((c) => ({
         correlation: c,
-        text: describeInsight(c, c.signalKey.startsWith("habit:") ? habitNames.get(c.signalKey.slice(6)) : undefined),
+        text: describeInsight(
+          c,
+          c.signalKey.startsWith("habit:") ? habitNames.get(c.signalKey.slice(6)) : undefined
+        ),
         accepted: acceptedKeys.has(c.signalKey),
       })),
     [selection, habitNames, acceptedKeys]
   );
 
   /* --- действия обратной связи --- */
-  const accept = useCallback((signalKey: string) => {
-    if (!userId) return;
-    InsightRepository.accept(userId, signalKey, Date.now());
-    void db.commit();
-    setFeedback(InsightRepository.feedbackOf(userId));
-  }, [userId]);
+  const accept = useCallback(
+    (signalKey: string) => {
+      if (!userId) return;
+      InsightRepository.accept(userId, signalKey, Date.now());
+      void db.commit();
+      setFeedback(InsightRepository.feedbackOf(userId));
+    },
+    [userId]
+  );
 
-  const dismiss = useCallback((signalKey: string) => {
-    if (!userId) return;
-    InsightRepository.dismiss(userId, signalKey, Date.now());
-    void db.commit();
-    setFeedback(InsightRepository.feedbackOf(userId));
-  }, [userId]);
+  const dismiss = useCallback(
+    (signalKey: string) => {
+      if (!userId) return;
+      InsightRepository.dismiss(userId, signalKey, Date.now());
+      void db.commit();
+      setFeedback(InsightRepository.feedbackOf(userId));
+    },
+    [userId]
+  );
 
-  const explainOpened = useCallback((signalKey: string) => {
-    if (!userId) return;
-    InsightRepository.logEvent(userId, signalKey, "explain_opened", Date.now());
-    void db.commit();
-  }, [userId]);
+  const explainOpened = useCallback(
+    (signalKey: string) => {
+      if (!userId) return;
+      InsightRepository.logEvent(userId, signalKey, "explain_opened", Date.now());
+      void db.commit();
+    },
+    [userId]
+  );
 
   return {
     ready,

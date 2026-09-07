@@ -37,9 +37,7 @@ export default function MoodFacePicker({
 
   const activeScore = hovered ?? pressed ?? value;
   const hint =
-    activeScore !== null
-      ? `${moodLabel(activeScore)} — ${moodHint(activeScore)}`
-      : "Выбери состояние";
+    activeScore !== null ? `${moodLabel(activeScore)} — ${moodHint(activeScore)}` : "Выбери состояние";
 
   return (
     <div>
@@ -61,18 +59,25 @@ export default function MoodFacePicker({
               onPointerUp={endPress}
               onPointerLeave={endPress}
               className={`flex flex-1 flex-col items-center gap-1 rounded-xl border py-2 transition-all duration-200 ${
-                selected ? "-translate-y-0.5 border-white/20 bg-white/[0.06] shadow-lg" : "border-transparent hover:-translate-y-0.5 hover:bg-white/[0.035]"
+                selected
+                  ? "-translate-y-0.5 border-white/20 bg-white/[0.06] shadow-lg"
+                  : "border-transparent hover:-translate-y-0.5 hover:bg-white/[0.035]"
               }`}
             >
               <MoodFace level={s.score} size={size} active={selected} />
               {showLabels && (
-                <span className={`text-[9px] font-bold ${selected ? "text-mist-200" : "text-mist-500"}`}>{s.label}</span>
+                <span className={`text-[9px] font-bold ${selected ? "text-mist-200" : "text-mist-500"}`}>
+                  {s.label}
+                </span>
               )}
             </button>
           );
         })}
       </div>
-      <p className="mt-1.5 min-h-[16px] text-center text-[11px] font-semibold text-mist-400" aria-live="polite">
+      <p
+        className="mt-1.5 min-h-[16px] text-center text-[11px] font-semibold text-mist-400"
+        aria-live="polite"
+      >
         {hint}
       </p>
     </div>

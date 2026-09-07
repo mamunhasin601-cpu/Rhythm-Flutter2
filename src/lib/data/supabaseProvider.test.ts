@@ -27,9 +27,18 @@ describe("focus_sessions: маппинг провайдера (миграции 
     const row = focusToRow(session());
     expect(Object.keys(row).sort()).toEqual(
       [
-        "id", "user_id", "type", "started_at", "date",
-        "planned_focus_min", "planned_break_min",
-        "focus_min", "break_min", "cycles", "completed", "sounds",
+        "id",
+        "user_id",
+        "type",
+        "started_at",
+        "date",
+        "planned_focus_min",
+        "planned_break_min",
+        "focus_min",
+        "break_min",
+        "cycles",
+        "completed",
+        "sounds",
       ].sort()
     );
   });
@@ -43,7 +52,13 @@ describe("focus_sessions: маппинг провайдера (миграции 
   });
 
   it("round-trip: rowToFocus(focusToRow(s)) восстанавливает доменную модель", () => {
-    const s = session({ focusMin: 49.7, breakMin: 9.9, completed: true, cycles: 1, sounds: ["rain", "cafe"] });
+    const s = session({
+      focusMin: 49.7,
+      breakMin: 9.9,
+      completed: true,
+      cycles: 1,
+      sounds: ["rain", "cafe"],
+    });
     expect(rowToFocus(focusToRow(s))).toEqual(s);
   });
 

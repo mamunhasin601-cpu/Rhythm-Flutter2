@@ -59,8 +59,15 @@ describe("store: разведение задач по слотам без мол
     let created = null as ReturnType<Ctx["addTask"]>;
     await act(async () => {
       created = appRef.current!.addTask({
-        title: "Задача A", description: "", date, startMin: 1300, endMin: 1360,
-        color: "violet", icon: "target", tags: [], energy: "medium",
+        title: "Задача A",
+        description: "",
+        date,
+        startMin: 1300,
+        endMin: 1360,
+        color: "violet",
+        icon: "target",
+        tags: [],
+        energy: "medium",
       });
     });
     expect(created).not.toBeNull();
@@ -72,8 +79,15 @@ describe("store: разведение задач по слотам без мол
     let collided = null as ReturnType<Ctx["addTask"]>;
     await act(async () => {
       collided = appRef.current!.addTask({
-        title: "Задача B", description: "", date, startMin: 1330, endMin: 1390,
-        color: "indigo", icon: "target", tags: [], energy: "medium",
+        title: "Задача B",
+        description: "",
+        date,
+        startMin: 1330,
+        endMin: 1390,
+        color: "indigo",
+        icon: "target",
+        tags: [],
+        energy: "medium",
       });
     });
 
@@ -90,8 +104,15 @@ describe("store: разведение задач по слотам без мол
     const date = todayKey();
     await act(async () => {
       appRef.current!.addTask({
-        title: "Встреча", description: "", date, startMin: 1300, endMin: 1360,
-        color: "violet", icon: "users", tags: [], energy: "medium",
+        title: "Встреча",
+        description: "",
+        date,
+        startMin: 1300,
+        endMin: 1360,
+        color: "violet",
+        icon: "users",
+        tags: [],
+        energy: "medium",
       });
     });
     await waitFor(() => expect(appRef.current!.tasks.some((t) => t.title === "Встреча")).toBe(true));

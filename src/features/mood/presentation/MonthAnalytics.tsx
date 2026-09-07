@@ -35,7 +35,11 @@ export default function MonthAnalytics() {
     () =>
       app.routines.map((r) => {
         const group = moods.filter((m) => r.days.includes(weekdayIdx(m.date)));
-        return { routine: r, count: group.length, median: group.length ? median(group.map((m) => m.mood)) : 0 };
+        return {
+          routine: r,
+          count: group.length,
+          median: group.length ? median(group.map((m) => m.mood)) : 0,
+        };
       }),
     [app.routines, moods]
   );
@@ -52,7 +56,8 @@ export default function MonthAnalytics() {
     const focusByDay = new Map<string, number>();
     for (const s of app.focusSessions) focusByDay.set(s.date, (focusByDay.get(s.date) ?? 0) + s.focusMin);
     const doneByDay = new Map<string, number>();
-    for (const t of app.tasks) if (t.status === "done") doneByDay.set(t.date, (doneByDay.get(t.date) ?? 0) + 1);
+    for (const t of app.tasks)
+      if (t.status === "done") doneByDay.set(t.date, (doneByDay.get(t.date) ?? 0) + 1);
 
     const xs = days.map((d) => focusByDay.get(d) ?? 0);
     const xt = days.map((d) => doneByDay.get(d) ?? 0);
@@ -63,12 +68,14 @@ export default function MonthAnalytics() {
     return { n, rFocus, rTasks };
   }, [moods, app.focusSessions, app.tasks]);
 
-  const moodTone = (v: number) => (v >= baseline + 0.3 ? "text-aqua-300" : v <= baseline - 0.3 ? "text-bad" : "text-mist-300");
+  const moodTone = (v: number) =>
+    v >= baseline + 0.3 ? "text-aqua-300" : v <= baseline - 0.3 ? "text-bad" : "text-mist-300";
 
   if (moods.length < MIN_SAMPLE) {
     return (
       <p className="rounded-xl border border-dashed border-white/10 px-5 py-10 text-center text-[13px] font-semibold text-mist-400">
-        За последние {PERIOD} дней только {moods.length} записей. Собери чуть больше (минимум {MIN_SAMPLE}), и здесь появятся паттерны.
+        За последние {PERIOD} дней только {moods.length} записей. Собери чуть больше (минимум {MIN_SAMPLE}), и
+        здесь появятся паттерны.
       </p>
     );
   }
@@ -96,11 +103,15 @@ export default function MonthAnalytics() {
                 }}
               />
               <span className="text-[10px] font-extrabold text-mist-500">{WD_SHORT[s.weekday]}</span>
-              <span className="text-[9px] font-semibold text-mist-600">{s.count ? `${s.count} зап.` : ""}</span>
+              <span className="text-[9px] font-semibold text-mist-600">
+                {s.count ? `${s.count} зап.` : ""}
+              </span>
             </div>
           ))}
         </div>
-        <p className="mt-3 border-t border-white/5 pt-2.5 text-[12px] leading-relaxed text-mist-400">{wdAlt}</p>
+        <p className="mt-3 border-t border-white/5 pt-2.5 text-[12px] leading-relaxed text-mist-400">
+          {wdAlt}
+        </p>
       </section>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -115,10 +126,20 @@ export default function MonthAnalytics() {
                 <div key={t.tag} className="flex items-center gap-2.5">
                   <span className="chip !text-[10px]">#{t.tag}</span>
                   <div className="h-[6px] flex-1 overflow-hidden rounded-full bg-white/5">
-                    <div className="h-full rounded-full" style={{ width: `${(t.median / 5) * 100}%`, background: "linear-gradient(90deg,#9D7BFF,#37D6C0)" }} />
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${(t.median / 5) * 100}%`,
+                        background: "linear-gradient(90deg,#9D7BFF,#37D6C0)",
+                      }}
+                    />
                   </div>
-                  <span className={`w-8 text-right text-[11px] font-bold ${moodTone(t.median)}`}>{t.median.toFixed(1)}</span>
-                  <span className="w-10 text-right text-[10px] font-semibold text-mist-600">{t.count} зап.</span>
+                  <span className={`w-8 text-right text-[11px] font-bold ${moodTone(t.median)}`}>
+                    {t.median.toFixed(1)}
+                  </span>
+                  <span className="w-10 text-right text-[10px] font-semibold text-mist-600">
+                    {t.count} зап.
+                  </span>
                 </div>
               ))}
             </div>
@@ -136,17 +157,22 @@ export default function MonthAnalytics() {
                 <div key={h.routine.id}>
                   <div className="flex items-center justify-between">
                     <span className="text-[12px] font-bold text-mist-200">{h.routine.title}</span>
-                    <span className={`text-[11px] font-bold ${h.count ? moodTone(h.median) : "text-mist-600"}`}>
+                    <span
+                      className={`text-[11px] font-bold ${h.count ? moodTone(h.median) : "text-mist-600"}`}
+                    >
                       {h.count ? h.median.toFixed(1) : "нет данных"}
                     </span>
                   </div>
                   <p className="text-[10px] font-semibold text-mist-600">
-                    {h.count ? `в запланированные дни · ${h.count} зап.` : "в запланированные дни записей нет"}
+                    {h.count
+                      ? `в запланированные дни · ${h.count} зап.`
+                      : "в запланированные дни записей нет"}
                   </p>
                 </div>
               ))}
               <p className="pt-1 text-[10.5px] font-semibold text-mist-600">
-                Сравнивается с базовым уровнем {baseline.toFixed(1)}. Выполнение привычек пока не отслеживается — используются запланированные дни.
+                Сравнивается с базовым уровнем {baseline.toFixed(1)}. Выполнение привычек пока не
+                отслеживается — используются запланированные дни.
               </p>
             </div>
           )}
@@ -167,12 +193,16 @@ export default function MonthAnalytics() {
               { label: "Выполненные задачи за день", r: numeric.rTasks },
             ].map((row) => (
               <div key={row.label} className="rounded-xl border border-white/6 bg-white/[0.02] p-3">
-                <div className="text-[11px] font-extrabold uppercase tracking-wider text-mist-500">{row.label}</div>
+                <div className="text-[11px] font-extrabold uppercase tracking-wider text-mist-500">
+                  {row.label}
+                </div>
                 {row.r === null ? (
                   <div className="mt-1.5 text-[13px] font-bold text-mist-400">Связь не выражена</div>
                 ) : (
                   <>
-                    <div className={`mt-1.5 font-display text-[22px] font-bold ${row.r > 0 ? "text-aqua-300" : "text-bad"}`}>
+                    <div
+                      className={`mt-1.5 font-display text-[22px] font-bold ${row.r > 0 ? "text-aqua-300" : "text-bad"}`}
+                    >
                       {row.r > 0 ? "+" : ""}
                       {row.r.toFixed(2)}
                     </div>

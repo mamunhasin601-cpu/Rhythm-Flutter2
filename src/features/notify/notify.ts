@@ -117,7 +117,11 @@ export function schedulerTick(ctx: NotifContext, now = new Date()): string[] {
     for (const w of wins.slice(0, 1)) {
       const delta = w.start - min;
       if (delta > 0 && delta <= 5) {
-        tryFire(`ft:${w.start}`, "Rhythm · золотое время", `С ${minToHM(w.start)} твоё продуктивное окно — время для сложной задачи`);
+        tryFire(
+          `ft:${w.start}`,
+          "Rhythm · золотое время",
+          `С ${minToHM(w.start)} твоё продуктивное окно — время для сложной задачи`
+        );
       }
     }
   }
@@ -139,7 +143,11 @@ export function schedulerTick(ctx: NotifContext, now = new Date()): string[] {
   if (prefs.eveningReview && now.getHours() === 21 && now.getMinutes() < 30) {
     const day = tasks.filter((t) => t.date === date && !t.recurrenceRule);
     const done = day.filter((t) => t.status === "done").length;
-    tryFire("er", "Rhythm · итоги дня", `Выполнено ${done} из ${day.length}. Отметь настроение — это поможет плану на завтра.`);
+    tryFire(
+      "er",
+      "Rhythm · итоги дня",
+      `Выполнено ${done} из ${day.length}. Отметь настроение — это поможет плану на завтра.`
+    );
   }
 
   return fired;

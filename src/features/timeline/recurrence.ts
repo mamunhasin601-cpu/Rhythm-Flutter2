@@ -26,7 +26,10 @@ export function parseRRule(raw: string): RRule | null {
   const interval = Math.max(1, parseInt(get("INTERVAL") ?? "1", 10) || 1);
   const byRaw = get("BYDAY");
   const byDay = byRaw
-    ? byRaw.split(",").map((d) => DAY_CODES[d.trim().toUpperCase()]).filter((d): d is number => d !== undefined)
+    ? byRaw
+        .split(",")
+        .map((d) => DAY_CODES[d.trim().toUpperCase()])
+        .filter((d): d is number => d !== undefined)
     : null;
   const until = get("UNTIL") ?? null;
   const countRaw = get("COUNT");
@@ -68,8 +71,7 @@ function mondayOf(dateKey: string): string {
 export function occurrences(rule: RRule, anchorKey: string, fromKey: string, horizonDays: number): string[] {
   const out: string[] = [];
   const horizonEnd = addDaysKey(fromKey, horizonDays);
-  const limit = (d: string) =>
-    d >= fromKey && d < horizonEnd && (!rule.until || d <= rule.until!);
+  const limit = (d: string) => d >= fromKey && d < horizonEnd && (!rule.until || d <= rule.until!);
   let emitted = 0;
 
   if (rule.freq === "DAILY") {

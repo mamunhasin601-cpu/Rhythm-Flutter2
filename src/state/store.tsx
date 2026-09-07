@@ -10,15 +10,34 @@ import { seedFor } from "../lib/seed";
 import { googleProvider } from "../lib/sync";
 import { clamp, hmToMin, todayKey, uid, DAY_END } from "../lib/time";
 import { parseRRule, occurrences } from "../features/timeline/recurrence";
-import { findCollisions, freeSlotOptions, resolveSlot, type SlotCheckResult } from "../features/timeline/conflicts";
+import {
+  findCollisions,
+  freeSlotOptions,
+  resolveSlot,
+  type SlotCheckResult,
+} from "../features/timeline/conflicts";
 import { act } from "../features/suggestions/data/SuggestionRepository";
 import { reschedulePlan } from "../features/suggestions/domain/reschedule";
 import { productivityWindows } from "../features/suggestions/suggestionService";
 import { runScheduler } from "../features/suggestions/SuggestionScheduler";
 import { startScheduler, registerWorker } from "../features/notify/notify";
 import type {
-  FocusSession, MoodLog, MoodPromptSettings, MoodSource, PromptType, Routine, Suggestion, SyncLogLine,
-  SyncState, TabId, Task, TaskStatus, TaskTemplate, Toast, ToastAction, User,
+  FocusSession,
+  MoodLog,
+  MoodPromptSettings,
+  MoodSource,
+  PromptType,
+  Routine,
+  Suggestion,
+  SyncLogLine,
+  SyncState,
+  TabId,
+  Task,
+  TaskStatus,
+  TaskTemplate,
+  Toast,
+  ToastAction,
+  User,
 } from "../lib/types";
 import { MoodRepository, type NewMoodInput } from "../features/mood/data/MoodRepository";
 import { MoodPromptRepository } from "../features/mood/data/MoodPromptRepository";
@@ -26,7 +45,13 @@ import { pickPrompt } from "../features/mood/domain/promptBudget";
 import type { MoodFilters } from "../features/mood/domain/moodFilters";
 import type { OverviewTab } from "../features/mood/domain/deeplinks";
 import { withTimeout } from "../lib/data/withTimeout";
-import { offlineQueue, isNetworkLikeError, type QueueOp, type QueueTable } from "../lib/data/offlineQueue";
+import {
+  flushQueuedOperations,
+  offlineQueue,
+  isNetworkLikeError,
+  type QueueOp,
+  type QueueTable,
+} from "../lib/data/offlineQueue";
 import type { ProfilePatch } from "../lib/data/types";
 import type { RoutineCompletion, SuggestionFeedback } from "../lib/types";
 
@@ -123,7 +148,10 @@ export interface Ctx extends AppState {
   applyRoutine: (r: Routine) => { time: number } | null;
 
   saveMood: (input: NewMoodInput) => Promise<MoodLog | null>;
-  updateMoodLog: (id: string, patch: Partial<Pick<MoodLog, "mood" | "note" | "tags" | "linkedTaskIds" | "date" | "timeMin">>) => Promise<void>;
+  updateMoodLog: (
+    id: string,
+    patch: Partial<Pick<MoodLog, "mood" | "note" | "tags" | "linkedTaskIds" | "date" | "timeMin">>
+  ) => Promise<void>;
   removeMoodLog: (id: string) => Promise<MoodLog | null>;
   restoreMoodLog: (entry: MoodLog) => Promise<void>;
   /* Quick Check-In sheet (Журнал 2.1) */
@@ -168,7 +196,9 @@ function loadSyncState(userId: string): SyncState {
   try {
     const raw = localStorage.getItem(`${SYNC_KEY}:${userId}`);
     if (raw) return { ...initial.sync, ...JSON.parse(raw) };
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return initial.sync;
 }
 
@@ -184,7 +214,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const persistSync = useCallback((sync: SyncState) => {
     const userId = stateRef.current.user?.id;
     if (!userId) return;
-    try { localStorage.setItem(`${SYNC_KEY}:${userId}`, JSON.stringify({ ...sync, syncing: false })); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(`${SYNC_KEY}:${userId}`, JSON.stringify({ ...sync, syncing: false }));
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   /* Материализация повторяющихся задач: создаёт экземпляры на 7 дней вперёд. */
@@ -196,14 +230,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!rule) continue;
       const dates = occurrences(rule, p.date, today, 7);
       for (const d of dates) {
-        if (d === p.date) continue;
         const exists = db.tasksOf(userId).some((t) => t.parentTaskId === p.id && t.date === d);
         if (exists) continue;
         const now = new Date().toISOString();
         db.insertTask({
-          ...p, id: uid(), date: d, status: "todo",
-          parentTaskId: p.id, recurrenceRule: undefined, externalId: undefined,
-          syncStatus: "local", createdAt: now, updatedAt: now,
+          ...p,
+          id: uid(),
+          date: d,
+          status: "todo",
+          parentTaskId: p.id,
+          recurrenceRule: undefined,
+          externalId: undefined,
+          syncStatus: "local",
+          createdAt: now,
+          updatedAt: now,
         });
       }
     }
@@ -212,19 +252,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const toast = useCallback((kind: Toast["kind"], text: string, actions?: ToastAction[]) => {
     const id = toastId.current++;
     setState((s) => ({ ...s, toasts: [...s.toasts.slice(-3), { id, kind, text, actions }] }));
-    window.setTimeout(() => {
-      setState((s) => ({ ...s, toasts: s.toasts.filter((t) => t.id !== id) }));
-    }, actions ? 7000 : 3800);
+    window.setTimeout(
+      () => {
+        setState((s) => ({ ...s, toasts: s.toasts.filter((t) => t.id !== id) }));
+      },
+      actions ? 7000 : 3800
+    );
   }, []);
 
   const netToastAt = useRef(0);
-  const netToast = useCallback((kind: Toast["kind"], text: string) => {
-    /* троттлинг сетевых тостов: не чаще раза в 5 секунд */
-    const now = Date.now();
-    if (now - netToastAt.current < 5000) return;
-    netToastAt.current = now;
-    toast(kind, text);
-  }, [toast]);
+  const netToast = useCallback(
+    (kind: Toast["kind"], text: string) => {
+      /* троттлинг сетевых тостов: не чаще раза в 5 секунд */
+      const now = Date.now();
+      if (now - netToastAt.current < 5000) return;
+      netToastAt.current = now;
+      toast(kind, text);
+    },
+    [toast]
+  );
 
   /**
    * Оптимистичное обновление состояния задач (фикс 16).
@@ -233,58 +279,76 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * и затирает оптимистичную строку, из-за чего задача появлялась
    * только после F5. Заодно пересчитывает подсказки (легко, с троттлом).
    */
-  const refreshTasksLocal = useCallback((userId: string) => {
-    materializeRecurrences(userId);
-    const suggestions = runScheduler(userId);
-    patch({
-      tasks: db.tasksOf(userId).sort((a, b) => a.date.localeCompare(b.date) || a.startMin - b.startMin),
-      suggestions,
-    });
-  }, [materializeRecurrences, patch]);
+  const refreshTasksLocal = useCallback(
+    (userId: string) => {
+      materializeRecurrences(userId);
+      const suggestions = runScheduler(userId);
+      patch({
+        tasks: db.tasksOf(userId).sort((a, b) => a.date.localeCompare(b.date) || a.startMin - b.startMin),
+        suggestions,
+      });
+    },
+    [materializeRecurrences, patch]
+  );
 
   /** Сервер подтвердил запись → снимаем пометку «синхронизирую». */
-  const markSynced = useCallback((userId: string, id: string) => {
-    const t = db.tasksOf(userId).find((x) => x.id === id);
-    if (!t || t.syncStatus !== "pending") return;
-    db.updateTask({ ...t, syncStatus: "synced" });
-    void db.commit();
-    refreshTasksLocal(userId);
-  }, [refreshTasksLocal]);
+  const markSynced = useCallback(
+    (userId: string, id: string) => {
+      const t = db.tasksOf(userId).find((x) => x.id === id);
+      if (!t || t.syncStatus !== "pending") return;
+      db.updateTask({ ...t, syncStatus: "synced" });
+      void db.commit();
+      refreshTasksLocal(userId);
+    },
+    [refreshTasksLocal]
+  );
 
   /* Подсказки: генерация кандидатов + дедупликация по ключу.
    * Фаза 1.5b: в remote-режиме ВСЕ чтения — через DataProvider; результат
    * гидрирует локальный кэш, и нижестоящая логика (scheduler, materialize,
    * корреляции) работает с актуальными данными. Сбой сети → работаем с кэшем. */
-  const refreshFromDb = useCallback(async (userId: string) => {
-    if (data.kind === "supabase") {
-      try {
-        const [tasks, routines, focusSessions, suggestionsRemote, templates, slots, moods] = await Promise.all([
-          data.tasks.list(userId),
-          data.routines.list(userId),
-          data.focus.list(userId),
-          data.suggestions.list(userId),
-          data.templates.list(userId),
-          data.slots.list(userId),
-          data.moods.list(userId),
-        ]);
-        db.hydrateUser(userId, { tasks, routines, focusSessions, suggestions: suggestionsRemote, templates, slots, moods });
-        await db.commit();
-      } catch (e) {
-        netToast("error", e instanceof Error ? e.message : "Не удалось загрузить данные — показан кэш");
+  const refreshFromDb = useCallback(
+    async (userId: string) => {
+      if (data.kind === "supabase") {
+        try {
+          const [tasks, routines, focusSessions, suggestionsRemote, templates, slots, moods] =
+            await Promise.all([
+              data.tasks.list(userId),
+              data.routines.list(userId),
+              data.focus.list(userId),
+              data.suggestions.list(userId),
+              data.templates.list(userId),
+              data.slots.list(userId),
+              data.moods.list(userId),
+            ]);
+          db.hydrateUser(userId, {
+            tasks,
+            routines,
+            focusSessions,
+            suggestions: suggestionsRemote,
+            templates,
+            slots,
+            moods,
+          });
+          await db.commit();
+        } catch (e) {
+          netToast("error", e instanceof Error ? e.message : "Не удалось загрузить данные — показан кэш");
+        }
       }
-    }
-    materializeRecurrences(userId);
-    const suggestions = runScheduler(userId);
-    patch({
-      tasks: db.tasksOf(userId).sort((a, b) => a.date.localeCompare(b.date) || a.startMin - b.startMin),
-      routines: db.routinesOf(userId),
-      moods: db.moodsOf(userId),
-      templates: db.templatesOf(userId),
-      suggestions,
-      focusSessions: db.focusSessionsOf(userId),
-      promptSettings: MoodPromptRepository.getSettings(userId),
-    });
-  }, [materializeRecurrences, netToast, patch]);
+      materializeRecurrences(userId);
+      const suggestions = runScheduler(userId);
+      patch({
+        tasks: db.tasksOf(userId).sort((a, b) => a.date.localeCompare(b.date) || a.startMin - b.startMin),
+        routines: db.routinesOf(userId),
+        moods: db.moodsOf(userId),
+        templates: db.templatesOf(userId),
+        suggestions,
+        focusSessions: db.focusSessionsOf(userId),
+        promptSettings: MoodPromptRepository.getSettings(userId),
+      });
+    },
+    [materializeRecurrences, netToast, patch]
+  );
 
   const dismissToast = useCallback((id: number) => {
     setState((s) => ({ ...s, toasts: s.toasts.filter((t) => t.id !== id) }));
@@ -304,26 +368,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    *   "error"  — логическая ошибка БД (строку надо убрать из store);
    *   "off"    — local-режим, зеркалировать некуда.
    */
-  const mirrorRemote = useCallback((
-    userId: string,
-    table: QueueTable,
-    kind: "upsert" | "delete",
-    payload: Record<string, unknown>,
-    op: () => Promise<unknown>
-  ): Promise<"ok" | "queued" | "error" | "off"> => {
-    if (data.kind !== "supabase") return Promise.resolve("off");
-    return op()
-      .then(() => "ok" as const)
-      .catch((e) => {
-        if (isNetworkLikeError(e)) {
-          offlineQueue.push({ userId, table, kind, payload });
-          netToast("info", "Нет связи с сервером — синхронизирую позже");
-          return "queued" as const;
-        }
-        netToast("error", e instanceof Error ? e.message : "Ошибка синхронизации");
-        return "error" as const;
-      });
-  }, [netToast]);
+  const mirrorRemote = useCallback(
+    (
+      userId: string,
+      table: QueueTable,
+      kind: "upsert" | "delete",
+      payload: Record<string, unknown>,
+      op: () => Promise<unknown>
+    ): Promise<"ok" | "queued" | "error" | "off"> => {
+      if (data.kind !== "supabase") return Promise.resolve("off");
+      return op()
+        .then(() => "ok" as const)
+        .catch((e) => {
+          if (isNetworkLikeError(e)) {
+            offlineQueue.push({ userId, table, kind, payload });
+            netToast("info", "Нет связи с сервером — синхронизирую позже");
+            return "queued" as const;
+          }
+          netToast("error", e instanceof Error ? e.message : "Ошибка синхронизации");
+          return "error" as const;
+        });
+    },
+    [netToast]
+  );
 
   /** Повтор операции из офлайн-очереди через провайдер. */
   const replayOp = useCallback((op: QueueOp): Promise<unknown> => {
@@ -362,23 +429,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const flushOffline = useCallback(async () => {
     const u = stateRef.current.user;
     if (data.kind !== "supabase" || !u) return;
-    const ops = offlineQueue.list(u.id);
-    if (!ops.length) return;
-    let done = 0;
-    for (const op of ops) {
-      try {
-        await replayOp(op);
-        offlineQueue.remove(u.id, op.id);
-        done++;
-      } catch (e) {
-        if (isNetworkLikeError(e)) break; /* всё ещё офлайн — остаток ждёт */
-        offlineQueue.remove(u.id, op.id); /* перманентная ошибка — сбрасываем, чтобы не клинить */
-        done++;
-      }
-    }
-    if (done > 0) {
+    if (!offlineQueue.list(u.id).length) return;
+
+    const result = await flushQueuedOperations(u.id, replayOp);
+    if (result.synced > 0) {
       await refreshFromDb(u.id);
-      toast("success", `Синхронизировано изменений: ${done}`);
+    }
+    if (result.failed > 0) {
+      toast(
+        "error",
+        `Не удалось синхронизировать ${result.failed} изменение. Оно сохранено в очереди для повтора.`
+      );
+    } else if (result.synced > 0) {
+      toast("success", `Синхронизировано изменений: ${result.synced}`);
     }
   }, [refreshFromDb, replayOp, toast]);
 
@@ -394,13 +457,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   /* boot-эффект перенесён ниже auth-секции (использует enterRemote). */
 
   /* ---------- auth ---------- */
-  const enterAs = useCallback(async (user: User, isNew: boolean) => {
-    if (isNew) seedInto(user);
-    sessionStore.write(user.id);
-    await db.commit();
-    refreshFromDb(user.id);
-    patch({ user, tab: "today", sync: { ...loadSyncState(user.id), syncing: false } });
-  }, [patch, refreshFromDb, seedInto]);
+  const enterAs = useCallback(
+    async (user: User, isNew: boolean) => {
+      if (isNew) seedInto(user);
+      sessionStore.write(user.id);
+      await db.commit();
+      refreshFromDb(user.id);
+      patch({ user, tab: "today", sync: { ...loadSyncState(user.id), syncing: false } });
+    },
+    [patch, refreshFromDb, seedInto]
+  );
 
   /**
    * Вход под реальным Supabase-пользователем (Фаза 1.5a).
@@ -408,83 +474,112 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
    * Профиль для UI-состояния собирается из auth-метаданных;
    * user_profiles (настройки) подключается в 1.5c.
    */
-  const enterRemote = useCallback(async (authUser: AuthUser) => {
-    const user: User = {
-      id: authUser.id,
-      name: authUser.name,
-      email: authUser.email,
-      provider: authUser.provider,
-      accent: "violet", sleepHours: 7.5, createdAt: new Date().toISOString(),
-      themePalette: "default", quietFrom: 22 * 60, quietTo: 8 * 60,
-      notifications: { ...DEFAULT_PREFS },
-    };
-    /* Устойчивость входа: загрузка ограничена по времени, любая ошибка БД/сети
-     * превращается в исключение с человекочитаемым текстом (его signIn/signUp
-     * вернут на экран входа вместо вечного спиннера). */
-    try {
-      await withTimeout(refreshFromDb(user.id), 10_000, "загрузка данных");
-    } catch (e) {
-      const msg = e instanceof Error && e.message ? e.message : "неизвестная ошибка";
-      /* preserve-caught-error: причина пробрасывается в cause (для логов/отладки).
-       * Object.assign — вместо двухаргументного конструктора Error (lib ES2020). */
-      throw Object.assign(new Error(`Не удалось загрузить данные (${msg}). Попробуйте ещё раз.`), { cause: e });
-    }
-    patch({ user, tab: "today", sync: { ...initial.sync, syncing: false } });
-    /* Фаза 1.5b: вход/восстановление сессии — сливаем накопленную офлайн-очередь. */
-    void flushOffline();
-  }, [flushOffline, patch, refreshFromDb]);
-
-  const signUp = useCallback(async (name: string, email: string, pass: string) => {
-    const res = await data.signUp(name, email, pass);
-    if (res.error || !res.user) return res.error ?? "Не удалось создать аккаунт";
-    if (data.kind === "supabase") {
+  const enterRemote = useCallback(
+    async (authUser: AuthUser) => {
+      const user: User = {
+        id: authUser.id,
+        name: authUser.name,
+        email: authUser.email,
+        provider: authUser.provider,
+        accent: "violet",
+        sleepHours: 7.5,
+        createdAt: new Date().toISOString(),
+        themePalette: "default",
+        quietFrom: 22 * 60,
+        quietTo: 8 * 60,
+        notifications: { ...DEFAULT_PREFS },
+      };
+      /* Устойчивость входа: загрузка ограничена по времени, любая ошибка БД/сети
+       * превращается в исключение с человекочитаемым текстом (его signIn/signUp
+       * вернут на экран входа вместо вечного спиннера). */
       try {
-        await enterRemote(res.user);
+        await withTimeout(refreshFromDb(user.id), 10_000, "загрузка данных");
       } catch (e) {
-        return e instanceof Error ? e.message : "Не удалось загрузить данные — попробуйте ещё раз";
+        const msg = e instanceof Error && e.message ? e.message : "неизвестная ошибка";
+        /* preserve-caught-error: причина пробрасывается в cause (для логов/отладки).
+         * Object.assign — вместо двухаргументного конструктора Error (lib ES2020). */
+        throw Object.assign(new Error(`Не удалось загрузить данные (${msg}). Попробуйте ещё раз.`), {
+          cause: e,
+        });
       }
-      return null;
-    }
-    const local = db.findUserByEmail(email);
-    if (local) await enterAs(local, true);
-    return null;
-  }, [enterAs, enterRemote]);
+      patch({ user, tab: "today", sync: { ...initial.sync, syncing: false } });
+      /* Фаза 1.5b: вход/восстановление сессии — сливаем накопленную офлайн-очередь. */
+      void flushOffline();
+    },
+    [flushOffline, patch, refreshFromDb]
+  );
 
-  const signIn = useCallback(async (email: string, pass: string) => {
-    const res = await data.signIn(email, pass);
-    if (res.error || !res.user) return res.error ?? "Не удалось войти";
-    if (data.kind === "supabase") {
-      try {
-        await enterRemote(res.user);
-      } catch (e) {
-        /* Ошибка загрузки данных: пользователь не входит, на экране — текст
-         * ошибки, кнопка снова активна. Сессия Supabase сохранена — повтор
-         * входа или перезагрузка страницы повторит загрузку. */
-        return e instanceof Error ? e.message : "Не удалось загрузить данные — попробуйте ещё раз";
+  const signUp = useCallback(
+    async (name: string, email: string, pass: string) => {
+      const res = await data.signUp(name, email, pass);
+      if (res.error || !res.user) return res.error ?? "Не удалось создать аккаунт";
+      if (data.kind === "supabase") {
+        try {
+          await enterRemote(res.user);
+        } catch (e) {
+          return e instanceof Error ? e.message : "Не удалось загрузить данные — попробуйте ещё раз";
+        }
+        return null;
       }
+      const local = db.findUserByEmail(email);
+      if (local) await enterAs(local, true);
       return null;
-    }
-    const local = db.findUserByEmail(email);
-    if (!local) return "Аккаунт не найден — создайте новый";
-    if (db.tasksOf(local.id).length === 0) seedInto(local);
-    await enterAs(local, false);
-    return null;
-  }, [enterAs, enterRemote, seedInto]);
+    },
+    [enterAs, enterRemote]
+  );
 
-  const signInWith = useCallback(async (provider: "google" | "apple") => {
-    const res = await data.signInWithOAuth(provider);
-    if (res.error) return res.error;
-    /* Supabase: произошёл редирект к провайдеру — сессию подхватит onAuthChange. */
-    if (data.kind === "supabase") return null;
-    const authU = await data.getSession();
-    const local = authU ? db.get().users.find((u) => u.id === authU.id) ?? null : null;
-    if (local) await enterAs(local, db.tasksOf(local.id).length === 0);
-    return null;
-  }, [enterAs]);
+  const signIn = useCallback(
+    async (email: string, pass: string) => {
+      const res = await data.signIn(email, pass);
+      if (res.error || !res.user) return res.error ?? "Не удалось войти";
+      if (data.kind === "supabase") {
+        try {
+          await enterRemote(res.user);
+        } catch (e) {
+          /* Ошибка загрузки данных: пользователь не входит, на экране — текст
+           * ошибки, кнопка снова активна. Сессия Supabase сохранена — повтор
+           * входа или перезагрузка страницы повторит загрузку. */
+          return e instanceof Error ? e.message : "Не удалось загрузить данные — попробуйте ещё раз";
+        }
+        return null;
+      }
+      const local = db.findUserByEmail(email);
+      if (!local) return "Аккаунт не найден — создайте новый";
+      if (db.tasksOf(local.id).length === 0) seedInto(local);
+      await enterAs(local, false);
+      return null;
+    },
+    [enterAs, enterRemote, seedInto]
+  );
+
+  const signInWith = useCallback(
+    async (provider: "google" | "apple") => {
+      const res = await data.signInWithOAuth(provider);
+      if (res.error) return res.error;
+      /* Supabase: произошёл редирект к провайдеру — сессию подхватит onAuthChange. */
+      if (data.kind === "supabase") return null;
+      const authU = await data.getSession();
+      const local = authU ? (db.get().users.find((u) => u.id === authU.id) ?? null) : null;
+      if (local) await enterAs(local, db.tasksOf(local.id).length === 0);
+      return null;
+    },
+    [enterAs]
+  );
 
   const signOut = useCallback(async () => {
     await data.signOut();
-    patch({ user: null, tasks: [], routines: [], moods: [], templates: [], suggestions: [], focusSessions: [], tab: "today", sync: initial.sync, syncLog: [] });
+    patch({
+      user: null,
+      tasks: [],
+      routines: [],
+      moods: [],
+      templates: [],
+      suggestions: [],
+      focusSessions: [],
+      tab: "today",
+      sync: initial.sync,
+      syncLog: [],
+    });
   }, [patch]);
 
   /* ---------- boot (после auth: нужен enterRemote) ---------- */
@@ -503,7 +598,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       /* Локальный демо-режим: сессия в localStorage, демо-сид при первом входе. */
       const sid = sessionStore.read();
-      const user = sid ? db.get().users.find((x) => x.id === sid) ?? null : null;
+      const user = sid ? (db.get().users.find((x) => x.id === sid) ?? null) : null;
       if (user) {
         if (db.tasksOf(user.id).length === 0) {
           seedInto(user);
@@ -531,7 +626,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = data.onAuthChange((u) => {
       if (data.kind !== "supabase") return;
       if (u) void enterRemote(u);
-      else patch({ user: null, tasks: [], routines: [], moods: [], templates: [], suggestions: [], focusSessions: [], tab: "today", sync: initial.sync, syncLog: [] });
+      else
+        patch({
+          user: null,
+          tasks: [],
+          routines: [],
+          moods: [],
+          templates: [],
+          suggestions: [],
+          focusSessions: [],
+          tab: "today",
+          sync: initial.sync,
+          syncLog: [],
+        });
     });
 
     /* Фаза 1.5b: возвращение сети — сливаем офлайн-очередь. */
@@ -544,119 +651,151 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
   }, [enterRemote, flushOffline, patch, refreshFromDb, seedInto]);
 
-  const updateUser = useCallback((p: Partial<User>) => {
-    const u = stateRef.current.user;
-    if (!u) return;
-    const next = { ...u, ...p };
-    db.updateUser(next);
-    void db.commit();
-    patch({ user: next });
-  }, [patch]);
+  const updateUser = useCallback(
+    (p: Partial<User>) => {
+      const u = stateRef.current.user;
+      if (!u) return;
+      const next = { ...u, ...p };
+      db.updateUser(next);
+      void db.commit();
+      patch({ user: next });
+    },
+    [patch]
+  );
 
   /* ---------- tasks ---------- */
-  const addTask = useCallback((input: NewTaskInput): Task | null => {
-    const u = stateRef.current.user!;
-    /* Разведение по слотам: одновременно — одна задача (фикс 7).
-     * Фикс 11: молча НЕ переносим — при коллизии задача не создаётся
-     * (null), а UI через checkTaskSlot показывает диалог с вариантами.
-     * Занято = только todo: выполненные/пропущенные слот не блокируют
-     * (единое правило с checkTaskSlot, иначе диалог предложит то, что
-     * addTask отклонит — микрофикс 12). */
-    const occupied = db
-      .tasksOf(u.id)
-      .filter((x) => x.date === input.date && !x.recurrenceRule && x.status === "todo");
-    if (findCollisions(occupied, input.startMin, input.endMin).length) return null;
-
-    const connected = stateRef.current.sync.connected;
-    const now = new Date().toISOString();
-    const task: Task = {
-      id: uid(), userId: u.id, ...input,
-      status: "todo", source: "local",
-      syncStatus: connected ? "pending" : "local",
-      createdAt: now, updatedAt: now,
-    };
-    /* Ошибки записи задачи не глотаем: показываем тост (контур фикса ошибок).
-     * Локальная запись не прошла — задача НЕ создаётся (фикс 16). */
-    try {
-      db.insertTask(task);
-      void db.commit();
-    } catch (e) {
-      toast("error", `Не удалось сохранить задачу: ${e instanceof Error ? e.message : "неизвестная ошибка"}`);
-      return null;
-    }
-    /* Оптимистичное обновление (фикс 16): задача видна на таймлайне
-     * МГНОВЕННО — до ответа сервера. Клиентский uuid = PK в Supabase,
-     * поэтому «временный id → реальный» не нужен: id стабилен, при
-     * успехе лишь помечаем строку synced. */
-    refreshTasksLocal(u.id);
-    void mirrorRemote(u.id, "tasks", "upsert", task as unknown as Record<string, unknown>, () => data.tasks.upsert(task)).then((res) => {
-      if (res === "error") {
-        /* Логическая ошибка БД — убираем из store (тост показал mirrorRemote). */
-        db.removeTask(task.id);
-        void db.commit();
-        refreshTasksLocal(u.id);
-      } else if (res === "ok") {
-        markSynced(u.id, task.id);
-      }
-      /* "queued" — строка остаётся с пометкой «синхронизирую» (pending). */
-    });
-    return task;
-  }, [markSynced, mirrorRemote, refreshTasksLocal, toast]);
-
-  const updateTask = useCallback((id: string, p: Partial<Task>): Task | null => {
-    const u = stateRef.current.user!;
-    const t = db.tasksOf(u.id).find((x) => x.id === id);
-    if (!t) return null;
-
-    /* Разведение по слотам: одновременно — одна задача (фикс 7).
-     * Фикс 11: перенос/смена дня при коллизии молча отклоняются (null) —
-     * UI через checkTaskSlot показывает диалог с вариантами переноса.
-     * Занято = только todo (единое правило, микрофикс 12).
-     * Resize — по-прежнему кламп до ближайшей следующей задачи. */
-    const dateChanged = p.date !== undefined && p.date !== t.date;
-    const startChanged = p.startMin !== undefined && p.startMin !== t.startMin;
-    if (dateChanged || startChanged) {
-      const targetDate = p.date ?? t.date;
-      const startMin = p.startMin ?? t.startMin;
-      const endMin = p.endMin ?? startMin + (t.endMin - t.startMin);
+  const addTask = useCallback(
+    (input: NewTaskInput): Task | null => {
+      const u = stateRef.current.user!;
+      /* Разведение по слотам: одновременно — одна задача (фикс 7).
+       * Фикс 11: молча НЕ переносим — при коллизии задача не создаётся
+       * (null), а UI через checkTaskSlot показывает диалог с вариантами.
+       * Занято = только todo: выполненные/пропущенные слот не блокируют
+       * (единое правило с checkTaskSlot, иначе диалог предложит то, что
+       * addTask отклонит — микрофикс 12). */
       const occupied = db
         .tasksOf(u.id)
-        .filter((x) => x.date === targetDate && x.id !== id && !x.recurrenceRule && x.status === "todo");
-      if (findCollisions(occupied, startMin, endMin).length) return null;
-    } else if (p.endMin !== undefined && p.endMin !== t.endMin) {
-      const occupied = db
-        .tasksOf(u.id)
-        .filter((x) => x.date === t.date && x.id !== id && !x.recurrenceRule && x.status === "todo" && x.startMin > t.startMin);
-      const limit = occupied.length ? Math.min(...occupied.map((x) => x.startMin)) : DAY_END;
-      p = { ...p, endMin: clamp(p.endMin, t.startMin + 15, limit) };
-    }
+        .filter((x) => x.date === input.date && !x.recurrenceRule && x.status === "todo");
+      if (findCollisions(occupied, input.startMin, input.endMin).length) return null;
 
-    const connected = stateRef.current.sync.connected;
-    const next: Task = {
-      ...t, ...p, updatedAt: new Date().toISOString(),
-      syncStatus: connected && !t.parentTaskId ? "pending" : t.syncStatus,
-    };
-    try {
-      db.updateTask(next);
-      void db.commit();
-    } catch (e) {
-      toast("error", `Не удалось обновить задачу: ${e instanceof Error ? e.message : "неизвестная ошибка"}`);
-      return null;
-    }
-    /* Оптимистично (фикс 16): изменения видны сразу, без серверного чтения. */
-    refreshTasksLocal(u.id);
-    void mirrorRemote(u.id, "tasks", "upsert", next as unknown as Record<string, unknown>, () => data.tasks.upsert(next)).then((res) => {
-      if (res === "error") {
-        /* Откат к предыдущей версии (снапшот t). */
-        db.updateTask(t);
+      const connected = stateRef.current.sync.connected;
+      const now = new Date().toISOString();
+      const task: Task = {
+        id: uid(),
+        userId: u.id,
+        ...input,
+        status: "todo",
+        source: "local",
+        syncStatus: connected ? "pending" : "local",
+        createdAt: now,
+        updatedAt: now,
+      };
+      /* Ошибки записи задачи не глотаем: показываем тост (контур фикса ошибок).
+       * Локальная запись не прошла — задача НЕ создаётся (фикс 16). */
+      try {
+        db.insertTask(task);
         void db.commit();
-        refreshTasksLocal(u.id);
-      } else if (res === "ok") {
-        markSynced(u.id, id);
+      } catch (e) {
+        toast(
+          "error",
+          `Не удалось сохранить задачу: ${e instanceof Error ? e.message : "неизвестная ошибка"}`
+        );
+        return null;
       }
-    });
-    return next;
-  }, [markSynced, mirrorRemote, refreshTasksLocal, toast]);
+      /* Оптимистичное обновление (фикс 16): задача видна на таймлайне
+       * МГНОВЕННО — до ответа сервера. Клиентский uuid = PK в Supabase,
+       * поэтому «временный id → реальный» не нужен: id стабилен, при
+       * успехе лишь помечаем строку synced. */
+      refreshTasksLocal(u.id);
+      void mirrorRemote(u.id, "tasks", "upsert", task as unknown as Record<string, unknown>, () =>
+        data.tasks.upsert(task)
+      ).then((res) => {
+        if (res === "error") {
+          /* Логическая ошибка БД — убираем из store (тост показал mirrorRemote). */
+          db.removeTask(task.id);
+          void db.commit();
+          refreshTasksLocal(u.id);
+        } else if (res === "ok") {
+          markSynced(u.id, task.id);
+        }
+        /* "queued" — строка остаётся с пометкой «синхронизирую» (pending). */
+      });
+      return task;
+    },
+    [markSynced, mirrorRemote, refreshTasksLocal, toast]
+  );
+
+  const updateTask = useCallback(
+    (id: string, p: Partial<Task>): Task | null => {
+      const u = stateRef.current.user!;
+      const t = db.tasksOf(u.id).find((x) => x.id === id);
+      if (!t) return null;
+
+      /* Разведение по слотам: одновременно — одна задача (фикс 7).
+       * Фикс 11: перенос/смена дня при коллизии молча отклоняются (null) —
+       * UI через checkTaskSlot показывает диалог с вариантами переноса.
+       * Занято = только todo (единое правило, микрофикс 12).
+       * Resize — по-прежнему кламп до ближайшей следующей задачи. */
+      const dateChanged = p.date !== undefined && p.date !== t.date;
+      const startChanged = p.startMin !== undefined && p.startMin !== t.startMin;
+      if (dateChanged || startChanged) {
+        const targetDate = p.date ?? t.date;
+        const startMin = p.startMin ?? t.startMin;
+        const endMin = p.endMin ?? startMin + (t.endMin - t.startMin);
+        const occupied = db
+          .tasksOf(u.id)
+          .filter((x) => x.date === targetDate && x.id !== id && !x.recurrenceRule && x.status === "todo");
+        if (findCollisions(occupied, startMin, endMin).length) return null;
+      } else if (p.endMin !== undefined && p.endMin !== t.endMin) {
+        const occupied = db
+          .tasksOf(u.id)
+          .filter(
+            (x) =>
+              x.date === t.date &&
+              x.id !== id &&
+              !x.recurrenceRule &&
+              x.status === "todo" &&
+              x.startMin > t.startMin
+          );
+        const limit = occupied.length ? Math.min(...occupied.map((x) => x.startMin)) : DAY_END;
+        p = { ...p, endMin: clamp(p.endMin, t.startMin + 15, limit) };
+      }
+
+      const connected = stateRef.current.sync.connected;
+      const next: Task = {
+        ...t,
+        ...p,
+        updatedAt: new Date().toISOString(),
+        syncStatus: connected && !t.parentTaskId ? "pending" : t.syncStatus,
+      };
+      try {
+        db.updateTask(next);
+        void db.commit();
+      } catch (e) {
+        toast(
+          "error",
+          `Не удалось обновить задачу: ${e instanceof Error ? e.message : "неизвестная ошибка"}`
+        );
+        return null;
+      }
+      /* Оптимистично (фикс 16): изменения видны сразу, без серверного чтения. */
+      refreshTasksLocal(u.id);
+      void mirrorRemote(u.id, "tasks", "upsert", next as unknown as Record<string, unknown>, () =>
+        data.tasks.upsert(next)
+      ).then((res) => {
+        if (res === "error") {
+          /* Откат к предыдущей версии (снапшот t). */
+          db.updateTask(t);
+          void db.commit();
+          refreshTasksLocal(u.id);
+        } else if (res === "ok") {
+          markSynced(u.id, id);
+        }
+      });
+      return next;
+    },
+    [markSynced, mirrorRemote, refreshTasksLocal, toast]
+  );
 
   /**
    * Проверка слота перед записью (фикс 11). Чистое чтение:
@@ -694,168 +833,204 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  const removeTask = useCallback((id: string) => {
-    const st = stateRef.current;
-    const u = st.user!;
-    const t = db.tasksOf(u.id).find((x) => x.id === id);
-    if (!t) return;
-    try {
-      db.removeTask(id);
-      /* Tombstone: удалённое событие календаря не должно вернуться при следующем pull. */
-      if (t.externalId) {
-        const removed = st.sync.removedExternalIds ?? [];
-        if (!removed.includes(t.externalId)) {
-          const sync = { ...st.sync, removedExternalIds: [...removed, t.externalId] };
-          patch({ sync });
-          persistSync(sync);
+  const removeTask = useCallback(
+    (id: string) => {
+      const st = stateRef.current;
+      const u = st.user!;
+      const t = db.tasksOf(u.id).find((x) => x.id === id);
+      if (!t) return;
+      try {
+        db.removeTask(id);
+        /* Tombstone: удалённое событие календаря не должно вернуться при следующем pull. */
+        if (t.externalId) {
+          const removed = st.sync.removedExternalIds ?? [];
+          if (!removed.includes(t.externalId)) {
+            const sync = { ...st.sync, removedExternalIds: [...removed, t.externalId] };
+            patch({ sync });
+            persistSync(sync);
+          }
         }
-      }
-      void db.commit();
-    } catch (e) {
-      toast("error", `Не удалось удалить задачу: ${e instanceof Error ? e.message : "неизвестная ошибка"}`);
-      return;
-    }
-    /* Оптимистично (фикс 16): строка исчезает с таймлайна сразу. */
-    refreshTasksLocal(u.id);
-    void mirrorRemote(u.id, "tasks", "delete", { id }, () => data.tasks.remove(u.id, id)).then((res) => {
-      if (res === "error") {
-        /* Откат: возвращаем задачу в store. */
-        db.insertTask(t);
         void db.commit();
-        refreshTasksLocal(u.id);
+      } catch (e) {
+        toast("error", `Не удалось удалить задачу: ${e instanceof Error ? e.message : "неизвестная ошибка"}`);
+        return;
       }
-    });
-  }, [mirrorRemote, patch, persistSync, refreshTasksLocal, toast]);
+      /* Оптимистично (фикс 16): строка исчезает с таймлайна сразу. */
+      refreshTasksLocal(u.id);
+      void mirrorRemote(u.id, "tasks", "delete", { id }, () => data.tasks.remove(u.id, id)).then((res) => {
+        if (res === "error") {
+          /* Откат: возвращаем задачу в store. */
+          db.insertTask(t);
+          void db.commit();
+          refreshTasksLocal(u.id);
+        }
+      });
+    },
+    [mirrorRemote, patch, persistSync, refreshTasksLocal, toast]
+  );
 
-  const setTaskStatus = useCallback((id: string, status: TaskStatus) => {
-    updateTask(id, { status });
-  }, [updateTask]);
+  const setTaskStatus = useCallback(
+    (id: string, status: TaskStatus) => {
+      updateTask(id, { status });
+    },
+    [updateTask]
+  );
 
-  const applyRoutine = useCallback((r: Routine) => {
-    const u = stateRef.current.user!;
-    const today = todayKey();
-    const dayTasks = db.tasksOf(u.id).filter((t) => t.date === today && t.status !== "skipped");
-    const maxStart = 23 * 60 - r.durationMin;
-    let start = clamp(hmToMin(r.timeHint), 6 * 60, Math.max(6 * 60, maxStart));
-    const overlaps = (s: number, e: number) => dayTasks.some((t) => s < t.endMin && e > t.startMin);
-    let guard = 0;
-    while (overlaps(start, start + r.durationMin) && guard++ < 60 && start <= maxStart) start += 15;
-    if (overlaps(start, start + r.durationMin) || start > maxStart) return null;
-    const created = addTask({
-      title: r.title, description: "", date: today,
-      startMin: start, endMin: start + r.durationMin,
-      color: r.color, icon: r.icon, tags: ["рутина"], energy: "low",
-    });
-    return created ? { time: created.startMin } : null;
-  }, [addTask]);
+  const applyRoutine = useCallback(
+    (r: Routine) => {
+      const u = stateRef.current.user!;
+      const today = todayKey();
+      const dayTasks = db.tasksOf(u.id).filter((t) => t.date === today && t.status !== "skipped");
+      const maxStart = 23 * 60 - r.durationMin;
+      let start = clamp(hmToMin(r.timeHint), 6 * 60, Math.max(6 * 60, maxStart));
+      const overlaps = (s: number, e: number) => dayTasks.some((t) => s < t.endMin && e > t.startMin);
+      let guard = 0;
+      while (overlaps(start, start + r.durationMin) && guard++ < 60 && start <= maxStart) start += 15;
+      if (overlaps(start, start + r.durationMin) || start > maxStart) return null;
+      const created = addTask({
+        title: r.title,
+        description: "",
+        date: today,
+        startMin: start,
+        endMin: start + r.durationMin,
+        color: r.color,
+        icon: r.icon,
+        tags: ["рутина"],
+        energy: "low",
+      });
+      return created ? { time: created.startMin } : null;
+    },
+    [addTask]
+  );
 
   /* ---------- mood (Журнал 2.1, Фаза A; с Фаза 1.5a — через DataProvider) ----------
    * Append-модель: каждый чек-ин — отдельная запись (разрешено несколько в день).
    * «Состояние сегодня» = последняя запись дня (latestMoodOfDay).
    * Режим Supabase: записи живут в mood_logs (RLS), конфликты — по updated_at. */
-  const completePromptIfNeeded = useCallback((userId: string, source: MoodLog["source"]) => {
-    const active = stateRef.current.activePrompt;
-    if (active && (source === "morning" || source === "evening") && source === active) {
-      MoodPromptRepository.log(userId, active, "completed");
-      patch({ activePrompt: null });
-    }
-  }, [patch]);
-
-  const saveMood = useCallback(async (input: NewMoodInput): Promise<MoodLog | null> => {
-    const u = stateRef.current.user!;
-    /* Связи — только те, что пользователь явно подтвердил (спека §7:
-     * система предлагает, пользователь выбирает). Никакой тихой автопривязки. */
-    const entry = MoodRepository.build(u.id, input, input.linkedTaskIds ?? []);
-    if (!entry) return null;
-
-    if (data.kind === "supabase") {
-      try {
-        const saved = await data.moods.insert(entry);
-        completePromptIfNeeded(u.id, saved.source);
-        await refreshFromDb(u.id);
-        return saved;
-      } catch (e) {
-        toast("error", e instanceof Error ? e.message : "Не удалось сохранить запись");
-        return null;
+  const completePromptIfNeeded = useCallback(
+    (userId: string, source: MoodLog["source"]) => {
+      const active = stateRef.current.activePrompt;
+      if (active && (source === "morning" || source === "evening") && source === active) {
+        MoodPromptRepository.log(userId, active, "completed");
+        patch({ activePrompt: null });
       }
-    }
+    },
+    [patch]
+  );
 
-    db.insertMood(entry);
-    completePromptIfNeeded(u.id, entry.source);
-    void db.commit();
-    refreshFromDb(u.id);
-    return entry;
-  }, [completePromptIfNeeded, refreshFromDb, toast]);
+  const saveMood = useCallback(
+    async (input: NewMoodInput): Promise<MoodLog | null> => {
+      const u = stateRef.current.user!;
+      /* Связи — только те, что пользователь явно подтвердил (спека §7:
+       * система предлагает, пользователь выбирает). Никакой тихой автопривязки. */
+      const entry = MoodRepository.build(u.id, input, input.linkedTaskIds ?? []);
+      if (!entry) return null;
 
-  const updateMoodLog = useCallback(async (id: string, p: Partial<Pick<MoodLog, "mood" | "note" | "tags" | "linkedTaskIds" | "date" | "timeMin">>) => {
-    const u = stateRef.current.user!;
-
-    if (data.kind === "supabase") {
-      const existing = stateRef.current.moods.find((m) => m.id === id);
-      if (!existing) return;
-      try {
-        await data.moods.update({ ...existing, ...p, updatedAt: new Date().toISOString() });
-        await refreshFromDb(u.id);
-      } catch (e) {
-        toast("error", e instanceof Error ? e.message : "Не удалось обновить запись");
+      if (data.kind === "supabase") {
+        try {
+          const saved = await data.moods.insert(entry);
+          completePromptIfNeeded(u.id, saved.source);
+          await refreshFromDb(u.id);
+          return saved;
+        } catch (e) {
+          toast("error", e instanceof Error ? e.message : "Не удалось сохранить запись");
+          return null;
+        }
       }
-      return;
-    }
 
-    MoodRepository.update(id, p);
-    void db.commit();
-    refreshFromDb(u.id);
-  }, [refreshFromDb, toast]);
-
-  const removeMoodLog = useCallback(async (id: string): Promise<MoodLog | null> => {
-    const u = stateRef.current.user!;
-
-    if (data.kind === "supabase") {
-      const removed = stateRef.current.moods.find((m) => m.id === id) ?? null;
-      if (!removed) return null;
-      try {
-        await data.moods.remove(u.id, id);
-        await refreshFromDb(u.id);
-      } catch (e) {
-        toast("error", e instanceof Error ? e.message : "Не удалось удалить запись");
-        return null;
-      }
-      return removed;
-    }
-
-    const removed = MoodRepository.remove(id);
-    if (removed) {
+      db.insertMood(entry);
+      completePromptIfNeeded(u.id, entry.source);
       void db.commit();
       refreshFromDb(u.id);
-    }
-    return removed;
-  }, [refreshFromDb, toast]);
+      return entry;
+    },
+    [completePromptIfNeeded, refreshFromDb, toast]
+  );
 
-  const restoreMoodLog = useCallback(async (entry: MoodLog) => {
-    const u = stateRef.current.user!;
-    if (data.kind === "supabase") {
-      try {
-        await data.moods.insert(entry);
-        await refreshFromDb(u.id);
-      } catch (e) {
-        toast("error", e instanceof Error ? e.message : "Не удалось восстановить запись");
+  const updateMoodLog = useCallback(
+    async (
+      id: string,
+      p: Partial<Pick<MoodLog, "mood" | "note" | "tags" | "linkedTaskIds" | "date" | "timeMin">>
+    ) => {
+      const u = stateRef.current.user!;
+
+      if (data.kind === "supabase") {
+        const existing = stateRef.current.moods.find((m) => m.id === id);
+        if (!existing) return;
+        try {
+          await data.moods.update({ ...existing, ...p, updatedAt: new Date().toISOString() });
+          await refreshFromDb(u.id);
+        } catch (e) {
+          toast("error", e instanceof Error ? e.message : "Не удалось обновить запись");
+        }
+        return;
       }
-      return;
-    }
-    MoodRepository.restore(entry);
-    void db.commit();
-    refreshFromDb(u.id);
-  }, [refreshFromDb, toast]);
+
+      MoodRepository.update(id, p);
+      void db.commit();
+      refreshFromDb(u.id);
+    },
+    [refreshFromDb, toast]
+  );
+
+  const removeMoodLog = useCallback(
+    async (id: string): Promise<MoodLog | null> => {
+      const u = stateRef.current.user!;
+
+      if (data.kind === "supabase") {
+        const removed = stateRef.current.moods.find((m) => m.id === id) ?? null;
+        if (!removed) return null;
+        try {
+          await data.moods.remove(u.id, id);
+          await refreshFromDb(u.id);
+        } catch (e) {
+          toast("error", e instanceof Error ? e.message : "Не удалось удалить запись");
+          return null;
+        }
+        return removed;
+      }
+
+      const removed = MoodRepository.remove(id);
+      if (removed) {
+        void db.commit();
+        refreshFromDb(u.id);
+      }
+      return removed;
+    },
+    [refreshFromDb, toast]
+  );
+
+  const restoreMoodLog = useCallback(
+    async (entry: MoodLog) => {
+      const u = stateRef.current.user!;
+      if (data.kind === "supabase") {
+        try {
+          await data.moods.insert(entry);
+          await refreshFromDb(u.id);
+        } catch (e) {
+          toast("error", e instanceof Error ? e.message : "Не удалось восстановить запись");
+        }
+        return;
+      }
+      MoodRepository.restore(entry);
+      void db.commit();
+      refreshFromDb(u.id);
+    },
+    [refreshFromDb, toast]
+  );
 
   /* ---------- Quick Check-In sheet ---------- */
-  const openCheckIn = useCallback((entryId?: string, opts?: { source?: MoodSource; openNote?: boolean }) => {
-    patch({
-      checkInOpen: true,
-      checkInEditId: entryId ?? null,
-      checkInSource: opts?.source ?? null,
-      checkInOpenNote: opts?.openNote ?? false,
-    });
-  }, [patch]);
+  const openCheckIn = useCallback(
+    (entryId?: string, opts?: { source?: MoodSource; openNote?: boolean }) => {
+      patch({
+        checkInOpen: true,
+        checkInEditId: entryId ?? null,
+        checkInSource: opts?.source ?? null,
+        checkInOpenNote: opts?.openNote ?? false,
+      });
+    },
+    [patch]
+  );
 
   const closeCheckIn = useCallback(() => {
     patch({ checkInOpen: false, checkInEditId: null, checkInSource: null, checkInOpenNote: false });
@@ -892,13 +1067,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     patch({ activePrompt: null });
   }, [patch]);
 
-  const savePromptSettings = useCallback((p: Partial<Omit<MoodPromptSettings, "userId" | "updatedAt">>) => {
-    const u = stateRef.current.user;
-    if (!u) return;
-    const next = MoodPromptRepository.saveSettings(u.id, p);
-    void db.commit();
-    patch({ promptSettings: next });
-  }, [patch]);
+  const savePromptSettings = useCallback(
+    (p: Partial<Omit<MoodPromptSettings, "userId" | "updatedAt">>) => {
+      const u = stateRef.current.user;
+      if (!u) return;
+      const next = MoodPromptRepository.saveSettings(u.id, p);
+      void db.commit();
+      patch({ promptSettings: next });
+    },
+    [patch]
+  );
 
   /* ---------- deep links (Фаза F) ---------- */
   /** Экран забирает данные маршрута ровно один раз (затем они гасятся). */
@@ -916,53 +1094,70 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   );
 
   /* ---------- flow sessions ---------- */
-  const logFocusSession = useCallback((s: Omit<FocusSession, "id" | "userId" | "date">): FocusSession => {
-    const u = stateRef.current.user!;
-    const session: FocusSession = { ...s, id: uid(), userId: u.id, date: s.startedAt.slice(0, 10) };
-    db.insertFocusSession(session);
-    void db.commit();
-    /* Фикс 7: без зеркала строка терялась в Supabase-режиме (refreshFromDb
-     * перечитывает focus_sessions с сервера). Офлайн → очередь. */
-    mirrorRemote(u.id, "focus_sessions", "upsert", session as unknown as Record<string, unknown>, () => data.focus.insert(session));
-    refreshFromDb(u.id);
-    return session;
-  }, [mirrorRemote, refreshFromDb]);
+  const logFocusSession = useCallback(
+    (s: Omit<FocusSession, "id" | "userId" | "date">): FocusSession => {
+      const u = stateRef.current.user!;
+      const session: FocusSession = { ...s, id: uid(), userId: u.id, date: s.startedAt.slice(0, 10) };
+      db.insertFocusSession(session);
+      void db.commit();
+      /* Фикс 7: без зеркала строка терялась в Supabase-режиме (refreshFromDb
+       * перечитывает focus_sessions с сервера). Офлайн → очередь. */
+      mirrorRemote(u.id, "focus_sessions", "upsert", session as unknown as Record<string, unknown>, () =>
+        data.focus.insert(session)
+      );
+      refreshFromDb(u.id);
+      return session;
+    },
+    [mirrorRemote, refreshFromDb]
+  );
 
   /* ---------- templates ---------- */
-  const addTemplate = useCallback((t: Omit<TaskTemplate, "id" | "userId">) => {
-    const u = stateRef.current.user!;
-    db.insertTemplate({ ...t, id: uid(), userId: u.id });
-    void db.commit();
-    refreshFromDb(u.id);
-  }, [refreshFromDb]);
+  const addTemplate = useCallback(
+    (t: Omit<TaskTemplate, "id" | "userId">) => {
+      const u = stateRef.current.user!;
+      db.insertTemplate({ ...t, id: uid(), userId: u.id });
+      void db.commit();
+      refreshFromDb(u.id);
+    },
+    [refreshFromDb]
+  );
 
-  const removeTemplate = useCallback((id: string) => {
-    const u = stateRef.current.user!;
-    db.removeTemplate(id);
-    void db.commit();
-    refreshFromDb(u.id);
-  }, [refreshFromDb]);
+  const removeTemplate = useCallback(
+    (id: string) => {
+      const u = stateRef.current.user!;
+      db.removeTemplate(id);
+      void db.commit();
+      refreshFromDb(u.id);
+    },
+    [refreshFromDb]
+  );
 
   /* ---------- suggestions (Smart Suggestions Engine, спека v1.0) ---------- */
   const pendingSuggestion = useCallback((): Suggestion | null => {
     return stateRef.current.suggestions[0] ?? null;
   }, []);
 
-  const suggestionAct = useCallback((id: string, action: "accepted" | "dismissed" | "snoozed") => {
-    const u = stateRef.current.user;
-    if (!u) return;
-    act(u.id, id, action);
-    refreshFromDb(u.id);
-  }, [refreshFromDb]);
+  const suggestionAct = useCallback(
+    (id: string, action: "accepted" | "dismissed" | "snoozed") => {
+      const u = stateRef.current.user;
+      if (!u) return;
+      act(u.id, id, action);
+      refreshFromDb(u.id);
+    },
+    [refreshFromDb]
+  );
 
   const acceptSuggestion = useCallback((id: string) => suggestionAct(id, "accepted"), [suggestionAct]);
 
   const dismissSuggestion = useCallback((id: string) => suggestionAct(id, "dismissed"), [suggestionAct]);
 
-  const snoozeSuggestion = useCallback((id: string) => {
-    suggestionAct(id, "snoozed");
-    toast("info", "Подсказка вернётся через 2 часа");
-  }, [suggestionAct, toast]);
+  const snoozeSuggestion = useCallback(
+    (id: string) => {
+      suggestionAct(id, "snoozed");
+      toast("info", "Подсказка вернётся через 2 часа");
+    },
+    [suggestionAct, toast]
+  );
 
   const applyReschedule = useCallback((): number => {
     const u = stateRef.current.user!;
@@ -972,8 +1167,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const t = tasks.find((x) => x.id === p.task.id);
       if (!t) continue;
       db.updateTask({
-        ...t, date: p.date, startMin: p.startMin, endMin: p.endMin,
-        status: "todo", movedCount: (t.movedCount ?? 0) + 1, updatedAt: new Date().toISOString(),
+        ...t,
+        date: p.date,
+        startMin: p.startMin,
+        endMin: p.endMin,
+        status: "todo",
+        movedCount: (t.movedCount ?? 0) + 1,
+        updatedAt: new Date().toISOString(),
       });
     }
     if (plan.length) {
@@ -988,63 +1188,88 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setState((s) => ({ ...s, syncLog: [...s.syncLog.slice(-30), { at: Date.now(), text, kind }] }));
   }, []);
 
-  const runSync = useCallback(async (silent: boolean) => {
-    const st = stateRef.current;
-    const u = st.user;
-    if (!u || st.sync.syncing || !st.sync.connected) return;
-    patch({ sync: { ...st.sync, syncing: true } });
-    if (!silent) log("Синхронизация с Google Calendar…");
+  const runSync = useCallback(
+    async (silent: boolean) => {
+      const st = stateRef.current;
+      const u = st.user;
+      if (!u || st.sync.syncing || !st.sync.connected) return;
+      patch({ sync: { ...st.sync, syncing: true } });
+      if (!silent) log("Синхронизация с Google Calendar…");
 
-    try {
-      /* pull */
-      const events = await googleProvider.pull();
-      const removed = new Set(stateRef.current.sync.removedExternalIds ?? []);
-      const existing = new Set(db.tasksOf(u.id).map((t) => t.externalId).filter(Boolean));
-      let pulled = 0;
-      for (const ev of events) {
-        if (existing.has(ev.externalId) || removed.has(ev.externalId)) continue;
-        db.insertTask({
-          id: uid(), userId: u.id, title: ev.title, description: "Импортировано из Google Calendar",
-          date: ev.date, startMin: ev.startMin, endMin: ev.endMin,
-          color: "indigo", icon: "calendar", tags: ["календарь"], energy: "medium",
-          status: "todo", source: "gcal", externalId: ev.externalId, syncStatus: "synced",
-          createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
-        });
-        pulled++;
-      }
+      try {
+        /* pull */
+        const events = await googleProvider.pull();
+        const removed = new Set(stateRef.current.sync.removedExternalIds ?? []);
+        const existing = new Set(
+          db
+            .tasksOf(u.id)
+            .map((t) => t.externalId)
+            .filter(Boolean)
+        );
+        let pulled = 0;
+        for (const ev of events) {
+          if (existing.has(ev.externalId) || removed.has(ev.externalId)) continue;
+          db.insertTask({
+            id: uid(),
+            userId: u.id,
+            title: ev.title,
+            description: "Импортировано из Google Calendar",
+            date: ev.date,
+            startMin: ev.startMin,
+            endMin: ev.endMin,
+            color: "indigo",
+            icon: "calendar",
+            tags: ["календарь"],
+            energy: "medium",
+            status: "todo",
+            source: "gcal",
+            externalId: ev.externalId,
+            syncStatus: "synced",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+          pulled++;
+        }
 
-      /* push */
-      const pending = db.tasksOf(u.id).filter((t) => t.syncStatus === "pending");
-      let pushed = 0;
-      if (pending.length > 0) {
-        pushed = await googleProvider.push(pending.map((t) => t.title));
-        for (const t of pending) db.updateTask({ ...t, syncStatus: "synced" });
-      }
+        /* push */
+        const pending = db.tasksOf(u.id).filter((t) => t.syncStatus === "pending");
+        let pushed = 0;
+        if (pending.length > 0) {
+          pushed = await googleProvider.push(pending.map((t) => t.title));
+          for (const t of pending) db.updateTask({ ...t, syncStatus: "synced" });
+        }
 
-      await db.commit();
-      refreshFromDb(u.id);
-      const sync: SyncState = { ...stateRef.current.sync, syncing: false, lastSyncAt: Date.now() };
-      patch({ sync });
-      persistSync(sync);
-      if (!silent) {
-        log(`Готово: +${pulled} из календаря, ${pushed} отправлено`, "ok");
-        toast("success", `Синхронизировано: ${pulled} получено, ${pushed} отправлено`);
+        await db.commit();
+        refreshFromDb(u.id);
+        const sync: SyncState = { ...stateRef.current.sync, syncing: false, lastSyncAt: Date.now() };
+        patch({ sync });
+        persistSync(sync);
+        if (!silent) {
+          log(`Готово: +${pulled} из календаря, ${pushed} отправлено`, "ok");
+          toast("success", `Синхронизировано: ${pulled} получено, ${pushed} отправлено`);
+        }
+      } catch {
+        patch({ sync: { ...stateRef.current.sync, syncing: false } });
+        if (!silent) {
+          log("Ошибка сети. Повторите позже", "warn");
+          toast("error", "Не удалось синхронизировать календарь");
+        }
       }
-    } catch {
-      patch({ sync: { ...stateRef.current.sync, syncing: false } });
-      if (!silent) {
-        log("Ошибка сети. Повторите позже", "warn");
-        toast("error", "Не удалось синхронизировать календарь");
-      }
-    }
-  }, [log, patch, persistSync, refreshFromDb, toast]);
+    },
+    [log, patch, persistSync, refreshFromDb, toast]
+  );
 
   const connectCalendar = useCallback(async () => {
     patch({ sync: { ...stateRef.current.sync, syncing: true } });
     log("Подключение к Google…");
     try {
       const { account } = await googleProvider.connect();
-      const sync: SyncState = { connected: true, account, autoSync: stateRef.current.sync.autoSync, syncing: false };
+      const sync: SyncState = {
+        connected: true,
+        account,
+        autoSync: stateRef.current.sync.autoSync,
+        syncing: false,
+      };
       patch({ sync });
       persistSync(sync);
       log(`Аккаунт подключён: ${account}`, "ok");
@@ -1063,11 +1288,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     toast("info", "Google Calendar отключён");
   }, [patch, persistSync, toast]);
 
-  const setAutoSync = useCallback((v: boolean) => {
-    const sync = { ...stateRef.current.sync, autoSync: v };
-    patch({ sync });
-    persistSync(sync);
-  }, [patch, persistSync]);
+  const setAutoSync = useCallback(
+    (v: boolean) => {
+      const sync = { ...stateRef.current.sync, autoSync: v };
+      patch({ sync });
+      persistSync(sync);
+    },
+    [patch, persistSync]
+  );
 
   /* авто-синхронизация каждые 45 c */
   useEffect(() => {
@@ -1089,16 +1317,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value: Ctx = {
     ...state,
-    toast, dismissToast, setTab: (t) => patch({ tab: t }),
-    signIn, signUp, signInWith, signOut, updateUser,
-    addTask, updateTask, removeTask, checkTaskSlot, setTaskStatus, applyRoutine,
-    saveMood, updateMoodLog, removeMoodLog, restoreMoodLog, openCheckIn, closeCheckIn,
-    evaluatePrompts, dismissPrompt, savePromptSettings,
-    consumeDeepLink, clearDeepLink, setDeepLink,
+    toast,
+    dismissToast,
+    setTab: (t) => patch({ tab: t }),
+    signIn,
+    signUp,
+    signInWith,
+    signOut,
+    updateUser,
+    addTask,
+    updateTask,
+    removeTask,
+    checkTaskSlot,
+    setTaskStatus,
+    applyRoutine,
+    saveMood,
+    updateMoodLog,
+    removeMoodLog,
+    restoreMoodLog,
+    openCheckIn,
+    closeCheckIn,
+    evaluatePrompts,
+    dismissPrompt,
+    savePromptSettings,
+    consumeDeepLink,
+    clearDeepLink,
+    setDeepLink,
     logFocusSession,
-    addTemplate, removeTemplate,
-    pendingSuggestion, acceptSuggestion, dismissSuggestion, snoozeSuggestion, applyReschedule,
-    connectCalendar, disconnectCalendar, syncNow: (silent = false) => runSync(silent), setAutoSync,
+    addTemplate,
+    removeTemplate,
+    pendingSuggestion,
+    acceptSuggestion,
+    dismissSuggestion,
+    snoozeSuggestion,
+    applyReschedule,
+    connectCalendar,
+    disconnectCalendar,
+    syncNow: (silent = false) => runSync(silent),
+    setAutoSync,
     wipeAndReseed,
   };
 

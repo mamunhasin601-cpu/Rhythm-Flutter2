@@ -30,15 +30,37 @@ const mood = (p: Partial<MoodLog> & { id: string }): MoodLog => ({
 });
 
 const task = (id: string, title: string): Task => ({
-  id, userId: "u1", title, description: "", date: "2026-02-10", startMin: 600, endMin: 630,
-  color: "violet", icon: "target", tags: [], energy: "medium", status: "done",
-  source: "local", syncStatus: "local", createdAt: "", updatedAt: "",
+  id,
+  userId: "u1",
+  title,
+  description: "",
+  date: "2026-02-10",
+  startMin: 600,
+  endMin: 630,
+  color: "violet",
+  icon: "target",
+  tags: [],
+  energy: "medium",
+  status: "done",
+  source: "local",
+  syncStatus: "local",
+  createdAt: "",
+  updatedAt: "",
 });
 
 const session = (id: string): FocusSession => ({
-  id, userId: "u1", type: "deep", startedAt: "2026-02-10T10:00:00.000Z", date: "2026-02-10",
-  plannedFocusMin: 50, plannedBreakMin: 10, focusMin: 48, breakMin: 10, cycles: 1,
-  completed: true, sounds: ["rain"],
+  id,
+  userId: "u1",
+  type: "deep",
+  startedAt: "2026-02-10T10:00:00.000Z",
+  date: "2026-02-10",
+  plannedFocusMin: 50,
+  plannedBreakMin: 10,
+  focusMin: 48,
+  breakMin: 10,
+  cycles: 1,
+  completed: true,
+  sounds: ["rain"],
 });
 
 describe("CSV", () => {
@@ -109,7 +131,10 @@ describe("CSV", () => {
 describe("PDF-отчёт (print-based HTML)", () => {
   const data = {
     periodLabel: "с 2026-02-01 по 2026-02-28",
-    entries: [mood({ id: "a", mood: 5, note: "хороший день", tags: ["прогулка"] }), mood({ id: "b", mood: 2 })],
+    entries: [
+      mood({ id: "a", mood: 5, note: "хороший день", tags: ["прогулка"] }),
+      mood({ id: "b", mood: 2 }),
+    ],
     routines: [],
     insights: [{ title: "Наблюдение", body: "В дни с прогулками состояние чаще выше обычного" }],
     generatedAt: "2026-02-28 21:00",
@@ -142,7 +167,10 @@ describe("PDF-отчёт (print-based HTML)", () => {
   });
 
   it("HTML-экранирование заметок (защита от разметки)", () => {
-    const html = buildReportHtml({ ...data, entries: [mood({ id: "x", note: "<script>alert(1)</script>" })] });
+    const html = buildReportHtml({
+      ...data,
+      entries: [mood({ id: "x", note: "<script>alert(1)</script>" })],
+    });
     expect(html).not.toContain("<script>");
     expect(html).toContain("&lt;script&gt;");
   });
@@ -150,13 +178,20 @@ describe("PDF-отчёт (print-based HTML)", () => {
 
 describe("вспомогательное", () => {
   it("stateDistribution считает доли", () => {
-    const dist = stateDistribution([mood({ id: "a", mood: 5 }), mood({ id: "b", mood: 5 }), mood({ id: "c", mood: 1 })]);
+    const dist = stateDistribution([
+      mood({ id: "a", mood: 5 }),
+      mood({ id: "b", mood: 5 }),
+      mood({ id: "c", mood: 1 }),
+    ]);
     expect(dist[0]).toMatchObject({ mood: 5, count: 2, share: 67 });
     expect(dist[1]).toMatchObject({ mood: 1, count: 1, share: 33 });
   });
 
   it("periodBounds задаёт границы периодов", () => {
-    expect(periodBounds("month", "2026-02-28", "2026-02-01")).toMatchObject({ from: "2026-02-01", to: "2026-02-28" });
+    expect(periodBounds("month", "2026-02-28", "2026-02-01")).toMatchObject({
+      from: "2026-02-01",
+      to: "2026-02-28",
+    });
     expect(periodBounds("30d", "2026-02-28", "2026-02-01").from).toBeDefined();
     expect(periodBounds("all", "2026-02-28", "2026-02-01").from).toBeUndefined();
   });

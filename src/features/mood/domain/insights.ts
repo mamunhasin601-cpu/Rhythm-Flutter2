@@ -9,10 +9,7 @@
  * ============================================================ */
 
 import { plural } from "../../../lib/time";
-import type {
-  MoodCorrelation,
-  MoodInsightFeedback,
-} from "../../../lib/types";
+import type { MoodCorrelation, MoodInsightFeedback } from "../../../lib/types";
 
 export const MAX_ACTIVE_INSIGHTS = 3;
 /** Новый инсайт вводится не чаще одного раза в 3 дня. */
@@ -24,8 +21,18 @@ const DAY_MS = 86_400_000;
 
 /* Запрещённые причинные слова (для самопроверки и тестов). */
 export const FORBIDDEN_CAUSAL_WORDS = [
-  "делает", "делают", "вызывает", "вызывают", "приводит", "приводят",
-  "заставляет", "заставляют", "помогает", "помогают", "улучшает", "улучшают",
+  "делает",
+  "делают",
+  "вызывает",
+  "вызывают",
+  "приводит",
+  "приводят",
+  "заставляет",
+  "заставляют",
+  "помогает",
+  "помогают",
+  "улучшает",
+  "улучшают",
 ];
 
 const CONF_WEIGHT: Record<MoodCorrelation["confidence"], number> = {
@@ -103,9 +110,7 @@ export function getActiveInsights(
   const active: MoodCorrelation[] = rankedSeen.slice(0, MAX_ACTIVE_INSIGHTS);
 
   // 6. частотный гейт для новых
-  const shownTimes = feedback
-    .map((f) => f.firstShownAt)
-    .filter((t): t is number => t != null);
+  const shownTimes = feedback.map((f) => f.firstShownAt).filter((t): t is number => t != null);
   const lastShown = shownTimes.length ? Math.max(...shownTimes) : null;
   const gatePassed = lastShown === null || now - lastShown >= NEW_INSIGHT_GATE_DAYS * DAY_MS;
 
@@ -123,10 +128,7 @@ export function getActiveInsights(
  * Устаревание (Фаза E, §6): signal_key активных/принятых инсайтов,
  * для которых больше нет поддерживающей корреляции.
  */
-export function staleSignalKeys(
-  correlations: MoodCorrelation[],
-  feedback: MoodInsightFeedback[]
-): string[] {
+export function staleSignalKeys(correlations: MoodCorrelation[], feedback: MoodInsightFeedback[]): string[] {
   const alive = new Set(correlations.map((c) => c.signalKey));
   return feedback
     .filter((f) => (f.status === "active" || f.status === "accepted") && !alive.has(f.signalKey))

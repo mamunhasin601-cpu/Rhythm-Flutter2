@@ -26,10 +26,31 @@ const entry = (p: Partial<MoodLog> & { id: string }): MoodLog => ({
 });
 
 const DATA: MoodLog[] = [
-  entry({ id: "a", mood: 5, tags: ["прогулка"], note: "отличный день", source: "manual", date: "2026-02-01" }),
+  entry({
+    id: "a",
+    mood: 5,
+    tags: ["прогулка"],
+    note: "отличный день",
+    source: "manual",
+    date: "2026-02-01",
+  }),
   entry({ id: "b", mood: 3, tags: ["работа"], note: "обычно", source: "post_focus", date: "2026-02-10" }),
-  entry({ id: "c", mood: 1, tags: ["работа", "стресс"], source: "evening", date: "2026-02-15", linkedTaskIds: ["t1"] }),
-  entry({ id: "d", mood: 3, tags: ["прогулка"], source: "morning", date: "2026-02-20", focusSessionId: "f1" }),
+  entry({
+    id: "c",
+    mood: 1,
+    tags: ["работа", "стресс"],
+    source: "evening",
+    date: "2026-02-15",
+    linkedTaskIds: ["t1"],
+  }),
+  entry({
+    id: "d",
+    mood: 3,
+    tags: ["прогулка"],
+    source: "morning",
+    date: "2026-02-20",
+    focusSessionId: "f1",
+  }),
 ];
 
 describe("applyFilters: И между типами, ИЛИ внутри типа", () => {
@@ -39,12 +60,20 @@ describe("applyFilters: И между типами, ИЛИ внутри типа
 
   it("ИЛИ внутри состояний", () => {
     const f: MoodFilters = { ...EMPTY_FILTERS, states: [1, 5] };
-    expect(applyFilters(DATA, f).map((m) => m.id).sort()).toEqual(["a", "c"]);
+    expect(
+      applyFilters(DATA, f)
+        .map((m) => m.id)
+        .sort()
+    ).toEqual(["a", "c"]);
   });
 
   it("ИЛИ внутри тегов", () => {
     const f: MoodFilters = { ...EMPTY_FILTERS, tags: ["прогулка", "стресс"] };
-    expect(applyFilters(DATA, f).map((m) => m.id).sort()).toEqual(["a", "c", "d"]);
+    expect(
+      applyFilters(DATA, f)
+        .map((m) => m.id)
+        .sort()
+    ).toEqual(["a", "c", "d"]);
   });
 
   it("И между типами: состояние И тег", () => {
@@ -54,18 +83,38 @@ describe("applyFilters: И между типами, ИЛИ внутри типа
 
   it("диапазон дат включительно", () => {
     const f: MoodFilters = { ...EMPTY_FILTERS, dateFrom: "2026-02-10", dateTo: "2026-02-15" };
-    expect(applyFilters(DATA, f).map((m) => m.id).sort()).toEqual(["b", "c"]);
+    expect(
+      applyFilters(DATA, f)
+        .map((m) => m.id)
+        .sort()
+    ).toEqual(["b", "c"]);
   });
 
   it("ИЛИ внутри источников", () => {
     const f: MoodFilters = { ...EMPTY_FILTERS, sources: ["morning", "evening"] };
-    expect(applyFilters(DATA, f).map((m) => m.id).sort()).toEqual(["c", "d"]);
+    expect(
+      applyFilters(DATA, f)
+        .map((m) => m.id)
+        .sort()
+    ).toEqual(["c", "d"]);
   });
 
   it("hasNote / hasLinks", () => {
-    expect(applyFilters(DATA, { ...EMPTY_FILTERS, hasNote: true }).map((m) => m.id).sort()).toEqual(["a", "b"]);
-    expect(applyFilters(DATA, { ...EMPTY_FILTERS, hasLinks: true }).map((m) => m.id).sort()).toEqual(["c", "d"]);
-    expect(applyFilters(DATA, { ...EMPTY_FILTERS, hasLinks: false }).map((m) => m.id).sort()).toEqual(["a", "b"]);
+    expect(
+      applyFilters(DATA, { ...EMPTY_FILTERS, hasNote: true })
+        .map((m) => m.id)
+        .sort()
+    ).toEqual(["a", "b"]);
+    expect(
+      applyFilters(DATA, { ...EMPTY_FILTERS, hasLinks: true })
+        .map((m) => m.id)
+        .sort()
+    ).toEqual(["c", "d"]);
+    expect(
+      applyFilters(DATA, { ...EMPTY_FILTERS, hasLinks: false })
+        .map((m) => m.id)
+        .sort()
+    ).toEqual(["a", "b"]);
   });
 
   it("комбинируется с текстовым поиском", () => {
@@ -120,7 +169,9 @@ describe("сериализация для deep links", () => {
   });
 
   it("отбрасывает некорректные score и источники", () => {
-    const back = deserializeFilters(encodeURIComponent(JSON.stringify({ s: [0, 3, 9], r: ["manual", "hack"] })));
+    const back = deserializeFilters(
+      encodeURIComponent(JSON.stringify({ s: [0, 3, 9], r: ["manual", "hack"] }))
+    );
     expect(back?.states).toEqual([3]);
     expect(back?.sources).toEqual(["manual"]);
   });

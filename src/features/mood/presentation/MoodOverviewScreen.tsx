@@ -69,7 +69,13 @@ export default function MoodOverviewScreen() {
         </button>
       </div>
 
-      <Modal open={settingsOpen} onClose={() => setSettingsOpen(false)} title="Напоминания" icon="clock" width={480}>
+      <Modal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        title="Напоминания"
+        icon="clock"
+        width={480}
+      >
         <PromptSettingsPanel />
       </Modal>
 

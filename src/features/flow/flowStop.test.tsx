@@ -69,14 +69,41 @@ describe("buildFocusSession — запись с ФАКТИЧЕСКОЙ длит�
   });
 
   it("прерванная сессия помечается completed=false", () => {
-    const done = buildFocusSession({ focusSec: 3000, breakSec: 600, cycles: 1, type: "deep", durMin: 50, startedAt: "x", completed: true, sounds: [] });
-    const aborted = buildFocusSession({ focusSec: 300, breakSec: 0, cycles: 0, type: "deep", durMin: 50, startedAt: "x", completed: false, sounds: [] });
+    const done = buildFocusSession({
+      focusSec: 3000,
+      breakSec: 600,
+      cycles: 1,
+      type: "deep",
+      durMin: 50,
+      startedAt: "x",
+      completed: true,
+      sounds: [],
+    });
+    const aborted = buildFocusSession({
+      focusSec: 300,
+      breakSec: 0,
+      cycles: 0,
+      type: "deep",
+      durMin: 50,
+      startedAt: "x",
+      completed: false,
+      sounds: [],
+    });
     expect(done.completed).toBe(true);
     expect(aborted.completed).toBe(false);
   });
 
   it("rest берёт плановую длительность из конфига, а не durMin", () => {
-    const s = buildFocusSession({ focusSec: 300, breakSec: 0, cycles: 1, type: "rest", durMin: 99, startedAt: "x", completed: true, sounds: [] });
+    const s = buildFocusSession({
+      focusSec: 300,
+      breakSec: 0,
+      cycles: 1,
+      type: "rest",
+      durMin: 99,
+      startedAt: "x",
+      completed: true,
+      sounds: [],
+    });
     expect(s.plannedFocusMin).toBe(FLOW_CFG.rest.focusMin); // 5, а не 99
     expect(s.plannedBreakMin).toBe(0);
     expect(s.focusMin).toBe(5);

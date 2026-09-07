@@ -133,7 +133,10 @@ describe("goldenWindow — текущее окно", () => {
 
 describe("goldenWindowsFromSlots — адаптивный порог (GAP-1)", () => {
   it("порог = max(2, медиана ненулевых): слабый сигнал не становится пиком", () => {
-    const weak = [{ slotIndex: 20, score: 0.67 }, { slotIndex: 21, score: 0.67 }];
+    const weak = [
+      { slotIndex: 20, score: 0.67 },
+      { slotIndex: 21, score: 0.67 },
+    ];
     expect(goldenWindowsFromSlots(weak)).toEqual([]); // порог 2, score ниже
   });
 
@@ -156,13 +159,17 @@ describe("goldenWindowsFromSlots — адаптивный порог (GAP-1)", (
 describe("hasGoldenHistory — cold start", () => {
   it("≥ 7 дней с данными → готов; 6 → ещё нет", () => {
     const days = (n: number) =>
-      Array.from({ length: n }, (_, i) => mkTask({ id: `d${i}`, date: addDaysKey(TODAY, -i), status: "done" }));
+      Array.from({ length: n }, (_, i) =>
+        mkTask({ id: `d${i}`, date: addDaysKey(TODAY, -i), status: "done" })
+      );
     expect(hasGoldenHistory(days(7), [], TODAY)).toBe(true);
     expect(hasGoldenHistory(days(6), [], TODAY)).toBe(false);
   });
 
   it("фокус-сессии тоже засчитываются как дни активности", () => {
-    const tasks = Array.from({ length: 6 }, (_, i) => mkTask({ id: `d${i}`, date: addDaysKey(TODAY, -i), status: "done" }));
+    const tasks = Array.from({ length: 6 }, (_, i) =>
+      mkTask({ id: `d${i}`, date: addDaysKey(TODAY, -i), status: "done" })
+    );
     const sessions = [mkSession({ id: "s", date: addDaysKey(TODAY, -10) })];
     expect(hasGoldenHistory(tasks, sessions, TODAY)).toBe(true);
   });

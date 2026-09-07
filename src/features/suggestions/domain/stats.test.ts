@@ -2,7 +2,9 @@ import { describe, it, expect } from "vitest";
 import { pearson, focusByWeek } from "./stats";
 import type { FocusSession } from "../../../lib/types";
 
-const mkSession = (p: Partial<FocusSession> & { id: string; date: string; focusMin: number }): FocusSession => ({
+const mkSession = (
+  p: Partial<FocusSession> & { id: string; date: string; focusMin: number }
+): FocusSession => ({
   userId: "u1",
   startedAt: `${p.date}T10:00:00`,
   type: "deep",
