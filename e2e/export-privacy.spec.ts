@@ -8,8 +8,9 @@ import { test, expect } from "@playwright/test";
 test.describe("приватность экспорта", () => {
   test("CSV: сводка с числом записей и периодом; Отмена не скачивает", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByTestId("nav-journal")).toBeVisible();
-    await page.getByTestId("nav-journal").click();
+    const journalNav = page.locator('[data-testid="nav-journal"]:visible');
+    await expect(journalNav).toBeVisible();
+    await journalNav.click();
 
     /* Флаг скачивания — должен остаться false после «Отмена». */
     let downloaded = false;

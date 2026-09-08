@@ -14,7 +14,7 @@ test.describe("check-in (ядро привычки)", () => {
   test("основной путь: checkin-open → состояние → Сохранить → запись в Journal", async ({ page }) => {
     await page.goto("/");
     /* Залогинены из storageState: каркас виден, мы на Today. */
-    await expect(page.getByTestId("nav-today")).toBeVisible();
+    await expect(page.locator('[data-testid="nav-today"]:visible')).toBeVisible();
 
     /* Триггер чек-ина на экране Today (кнопка «+» / «Отметить состояние»). */
     await page.getByTestId("checkin-open").first().click();
@@ -38,7 +38,7 @@ test.describe("check-in (ядро привычки)", () => {
 
     /* Переходим в Journal: новая запись (сегодня) — первая в ленте,
        с выбранным состоянием «Хорошо» (текстовая подпись, не score). */
-    await page.getByTestId("nav-journal").click();
+    await page.locator('[data-testid="nav-journal"]:visible').click();
     await expect(page.getByTestId("journal-list")).toBeVisible();
     const first = page.getByTestId("journal-entry").first();
     await expect(first).toBeVisible();
@@ -47,7 +47,7 @@ test.describe("check-in (ядро привычки)", () => {
 
   test("хоткей M открывает чек-ин на Today и не срабатывает поверх полей ввода", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByTestId("nav-today")).toBeVisible();
+    await expect(page.locator('[data-testid="nav-today"]:visible')).toBeVisible();
 
     /* M на Today (фокус не в поле ввода) → чек-ин открыт. */
     await page.keyboard.press("m");
@@ -73,6 +73,7 @@ test.describe("check-in (ядро привычки)", () => {
 
   test("все 5 состояний доступны с клавиатуры и имеют текстовые подписи", async ({ page }) => {
     await page.goto("/");
+    await expect(page.locator('[data-testid="nav-today"]:visible')).toBeVisible();
     await page.keyboard.press("m");
     await expect(page.getByTestId("checkin-sheet")).toBeVisible();
 
