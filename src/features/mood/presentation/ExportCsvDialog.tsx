@@ -61,7 +61,14 @@ export default function ExportCsvDialog({
     window.setTimeout(() => URL.revokeObjectURL(url), 4000);
 
     /* только факт, не содержимое */
-    db.insertExportLog({ id: uid(), userId: user.id, kind: "csv", count: entries.length, period: periodLabel, createdAt: Date.now() });
+    db.insertExportLog({
+      id: uid(),
+      userId: user.id,
+      kind: "csv",
+      count: entries.length,
+      period: periodLabel,
+      createdAt: Date.now(),
+    });
     void db.commit();
     setDone(true);
     window.setTimeout(() => {
@@ -81,8 +88,15 @@ export default function ExportCsvDialog({
       footer={
         !done ? (
           <>
-            <button className="btn btn-ghost" onClick={onClose} data-testid="export-cancel">Отмена</button>
-            <button className="btn btn-primary" onClick={doExport} disabled={!entries.length} data-testid="export-confirm">
+            <button className="btn btn-ghost" onClick={onClose} data-testid="export-cancel">
+              Отмена
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={doExport}
+              disabled={!entries.length}
+              data-testid="export-confirm"
+            >
               <I n="download" size={14} /> Скачать CSV
             </button>
           </>
@@ -95,7 +109,9 @@ export default function ExportCsvDialog({
             <I n="check" size={22} sw={2.4} />
           </span>
           <p className="mt-3 text-[13px] font-bold text-mist-50">Файл сохранён локально</p>
-          <p className="mt-1 text-[11.5px] font-semibold text-mist-500">Содержимое не отправлялось на сервер</p>
+          <p className="mt-1 text-[11.5px] font-semibold text-mist-500">
+            Содержимое не отправлялось на сервер
+          </p>
         </div>
       ) : summary ? (
         <div className="space-y-4">
@@ -119,10 +135,12 @@ export default function ExportCsvDialog({
             </div>
           </div>
           <div className="rounded-lg border border-warn/25 bg-warn/8 px-3.5 py-2.5 text-[11.5px] font-semibold leading-relaxed text-warn">
-            <span className="flex items-center gap-1.5 font-extrabold"><I n="shield" size={12} /> Чувствительные данные</span>
+            <span className="flex items-center gap-1.5 font-extrabold">
+              <I n="shield" size={12} /> Чувствительные данные
+            </span>
             <span className="mt-0.5 block text-warn/85">
-              Файл содержит настроения и заметки. Он будет сохранён только на этом устройстве (UTF-8 с BOM — корректно
-              откроется в Excel). Выгружаются только ваши данные.
+              Файл содержит настроения и заметки. Он будет сохранён только на этом устройстве (UTF-8 с BOM —
+              корректно откроется в Excel). Выгружаются только ваши данные.
             </span>
           </div>
         </div>

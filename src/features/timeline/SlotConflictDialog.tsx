@@ -83,15 +83,17 @@ export default function SlotConflictDialog({
               )}
             </div>
           </div>
-          {extra > 0 && <p className="mt-2 text-[11.5px] font-semibold text-mist-500">и ещё {extra} {extra === 1 ? "задача" : "задачи"} в этом интервале</p>}
+          {extra > 0 && (
+            <p className="mt-2 text-[11.5px] font-semibold text-mist-500">
+              и ещё {extra} {extra === 1 ? "задача" : "задачи"} в этом интервале
+            </p>
+          )}
         </div>
 
         {/* куда перенести */}
         {options.length > 0 ? (
           <div>
-            <p className="label">
-              Перенести «{taskTitle}» на свободное время?
-            </p>
+            <p className="label">Перенести «{taskTitle}» на свободное время?</p>
             <div className="grid gap-1.5" role="radiogroup" aria-label="Свободные окна">
               {options.map((o, i) => {
                 const on = i === Math.min(selected, options.length - 1);
@@ -104,14 +106,22 @@ export default function SlotConflictDialog({
                     onClick={() => setSelected(i)}
                     data-testid="slot-conflict-option"
                     className={`flex items-center justify-between rounded-lg border px-3.5 py-2.5 text-left transition ${
-                      on ? "border-vio-400/55 bg-vio-400/10" : "border-white/8 bg-white/[0.02] hover:border-white/18"
+                      on
+                        ? "border-vio-400/55 bg-vio-400/10"
+                        : "border-white/8 bg-white/[0.02] hover:border-white/18"
                     }`}
                   >
-                    <span className={`font-display text-[14px] font-bold tabular-nums ${on ? "text-mist-50" : "text-mist-300"}`}>
+                    <span
+                      className={`font-display text-[14px] font-bold tabular-nums ${on ? "text-mist-50" : "text-mist-300"}`}
+                    >
                       {minToHM(o.startMin)}–{minToHM(o.endMin)}
                     </span>
                     <span className="flex items-center gap-2">
-                      {i === 0 && <span className="chip !text-[9px] !text-aqua-300 !border-aqua-400/40 !bg-aqua-400/10">ближайшее</span>}
+                      {i === 0 && (
+                        <span className="chip !text-[9px] !text-aqua-300 !border-aqua-400/40 !bg-aqua-400/10">
+                          ближайшее
+                        </span>
+                      )}
                       {on && <I n="check" size={14} className="text-vio-300" />}
                     </span>
                   </button>

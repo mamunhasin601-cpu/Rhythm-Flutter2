@@ -63,7 +63,10 @@ describe("nextFreeSlot — поиск свободного окна", () => {
   });
 
   it("перепрыгивает всю цепочку смежных занятых задач", () => {
-    const busy = [mkTask({ id: "a", startMin: 600, endMin: 660 }), mkTask({ id: "b", startMin: 660, endMin: 720 })];
+    const busy = [
+      mkTask({ id: "a", startMin: 600, endMin: 660 }),
+      mkTask({ id: "b", startMin: 660, endMin: 720 }),
+    ];
     expect(nextFreeSlot(busy, 615, 60, 1380)).toBe(720);
   });
 
@@ -148,12 +151,26 @@ describe("estimateDuration — медианная длительность (§4.
   const realToday = todayKey();
   it("медиана по нечётной и чётной выборке", () => {
     const odd = [30, 45, 90].map((d, i) =>
-      mkTask({ id: `o${i}`, date: addDaysKey(realToday, -1), startMin: 600, endMin: 600 + d, status: "done", tags: ["x"] })
+      mkTask({
+        id: `o${i}`,
+        date: addDaysKey(realToday, -1),
+        startMin: 600,
+        endMin: 600 + d,
+        status: "done",
+        tags: ["x"],
+      })
     );
     expect(estimateDuration(odd, ["x"])).toBe(45);
 
     const even = [30, 50].map((d, i) =>
-      mkTask({ id: `e${i}`, date: addDaysKey(realToday, -1), startMin: 600, endMin: 600 + d, status: "done", tags: ["x"] })
+      mkTask({
+        id: `e${i}`,
+        date: addDaysKey(realToday, -1),
+        startMin: 600,
+        endMin: 600 + d,
+        status: "done",
+        tags: ["x"],
+      })
     );
     expect(estimateDuration(even, ["x"])).toBe(40);
   });

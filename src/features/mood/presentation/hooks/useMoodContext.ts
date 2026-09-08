@@ -31,18 +31,21 @@ export function useMoodContext(entry: MoodLog | null): MoodContext {
 
   return useMemo<MoodContext>(() => {
     if (!entry) {
-      return { linkedTasks: [], session: null, day: { tasksTotal: 0, tasksDone: 0, focusMin: 0, habits: [] }, dayFeed: [] };
+      return {
+        linkedTasks: [],
+        session: null,
+        day: { tasksTotal: 0, tasksDone: 0, focusMin: 0, habits: [] },
+        dayFeed: [],
+      };
     }
 
     /* --- связанные задачи (одним проходом по tasks) --- */
     const byId = new Map(tasks.map((t) => [t.id, t]));
-    const linkedTasks = entry.linkedTaskIds
-      .map((id) => byId.get(id))
-      .filter((t): t is Task => Boolean(t));
+    const linkedTasks = entry.linkedTaskIds.map((id) => byId.get(id)).filter((t): t is Task => Boolean(t));
 
     /* --- flow session --- */
     const session = entry.focusSessionId
-      ? focusSessions.find((s) => s.id === entry.focusSessionId) ?? null
+      ? (focusSessions.find((s) => s.id === entry.focusSessionId) ?? null)
       : null;
 
     /* --- контекст дня (батчим: один проход по tasks, один по focusSessions) --- */

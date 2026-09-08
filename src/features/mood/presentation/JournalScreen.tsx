@@ -65,7 +65,7 @@ export default function JournalScreen() {
 
   /* Запись для Detail View (ищется по id, чтобы правки отражались live). */
   const detailEntry = useMemo(
-    () => (detailId ? app.moods.find((m) => m.id === detailId) ?? null : null),
+    () => (detailId ? (app.moods.find((m) => m.id === detailId) ?? null) : null),
     [detailId, app.moods]
   );
 
@@ -122,7 +122,11 @@ export default function JournalScreen() {
               Она не существует или принадлежит другому аккаунту — детали не отображаются.
             </p>
           </div>
-          <button className="iconbtn !h-7 !w-7" onClick={() => setNotFound(false)} aria-label="Скрыть уведомление">
+          <button
+            className="iconbtn !h-7 !w-7"
+            onClick={() => setNotFound(false)}
+            aria-label="Скрыть уведомление"
+          >
             <I n="x" size={13} />
           </button>
         </section>
@@ -138,7 +142,11 @@ export default function JournalScreen() {
         </div>
         <div className="flex items-center gap-2">
           <div className="relative">
-            <I n="search" size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-mist-500" />
+            <I
+              n="search"
+              size={14}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-mist-500"
+            />
             <input
               className="input !w-[200px] !pl-8 !text-[12.5px]"
               placeholder="Поиск по заметкам и тегам"
@@ -147,28 +155,52 @@ export default function JournalScreen() {
               aria-label="Поиск по журналу"
             />
           </div>
-          <button className="btn btn-ghost !px-2.5 !py-2" onClick={() => setCsvOpen(true)} title="Экспорт CSV" aria-label="Экспорт CSV" data-testid="export-csv-trigger">
+          <button
+            className="btn btn-ghost !px-2.5 !py-2"
+            onClick={() => setCsvOpen(true)}
+            title="Экспорт CSV"
+            aria-label="Экспорт CSV"
+            data-testid="export-csv-trigger"
+          >
             <I n="download" size={15} />
           </button>
-          <button className="btn btn-ghost !px-2.5 !py-2" onClick={() => setPdfOpen(true)} title="Отчёт за период (PDF)" aria-label="Отчёт за период">
+          <button
+            className="btn btn-ghost !px-2.5 !py-2"
+            onClick={() => setPdfOpen(true)}
+            title="Отчёт за период (PDF)"
+            aria-label="Отчёт за период"
+          >
             <I n="file" size={15} />
           </button>
-          <button className="btn btn-primary !px-3 !py-2" onClick={() => app.openCheckIn()} title="Отметить состояние (M)" data-testid="checkin-open">
+          <button
+            className="btn btn-primary !px-3 !py-2"
+            onClick={() => app.openCheckIn()}
+            title="Отметить состояние (M)"
+            data-testid="checkin-open"
+          >
             <I n="plus" size={15} sw={2.4} /> Отметить
           </button>
         </div>
       </section>
 
       {/* расширенные фильтры (Фаза F, §1) */}
-      <JournalFiltersPanel filters={filters} onChange={setFilters} availableTags={availableTags} total={j.total} />
+      <JournalFiltersPanel
+        filters={filters}
+        onChange={setFilters}
+        availableTags={availableTags}
+        total={j.total}
+      />
 
       {/* пустые состояния */}
       {j.total === 0 && !j.query && !isFilterActive(filters) && (
         <section className="anim-rise d-1 flex flex-col items-center rounded-2xl border border-dashed border-white/10 bg-white/[0.015] px-6 py-14 text-center">
           <MoodFace level={3} size={44} />
-          <h2 className="mt-4 font-display text-[16px] font-semibold text-mist-50">Здесь появятся твои состояния</h2>
+          <h2 className="mt-4 font-display text-[16px] font-semibold text-mist-50">
+            Здесь появятся твои состояния
+          </h2>
           <p className="mt-1.5 max-w-[380px] text-[13px] leading-relaxed text-mist-400">
-            Отметь, как ты сейчас, — это занимает пару секунд. Возвращайся, когда захочешь: пропуски — это нормально.
+            Отметь, как ты сейчас, — это занимает пару секунд. Возвращайся, когда захочешь: пропуски — это
+            нормально.
           </p>
           <button className="btn btn-primary mt-5" onClick={() => app.openCheckIn()}>
             <I n="plus" size={15} sw={2.4} /> Первый чек-ин
@@ -179,11 +211,21 @@ export default function JournalScreen() {
       {j.total === 0 && (j.query || isFilterActive(filters)) && (
         <section className="anim-rise rounded-2xl border border-dashed border-white/10 px-6 py-12 text-center">
           <p className="text-[13px] font-semibold text-mist-400">
-            {j.query ? `По запросу «${j.query}» ничего не нашлось` : "Под текущие фильтры не попало ни одной записи"}
+            {j.query
+              ? `По запросу «${j.query}» ничего не нашлось`
+              : "Под текущие фильтры не попало ни одной записи"}
           </p>
           <div className="mt-4 flex justify-center gap-2">
-            {j.query && <button className="btn btn-ghost" onClick={() => j.setQuery("")}>Сбросить поиск</button>}
-            {isFilterActive(filters) && <button className="btn btn-ghost" onClick={() => setFilters(EMPTY_FILTERS)}>Сбросить фильтры</button>}
+            {j.query && (
+              <button className="btn btn-ghost" onClick={() => j.setQuery("")}>
+                Сбросить поиск
+              </button>
+            )}
+            {isFilterActive(filters) && (
+              <button className="btn btn-ghost" onClick={() => setFilters(EMPTY_FILTERS)}>
+                Сбросить фильтры
+              </button>
+            )}
           </div>
         </section>
       )}
@@ -191,7 +233,9 @@ export default function JournalScreen() {
       {/* лента */}
       {j.groups.map((g, gi) => (
         <section key={g.date} className={`anim-rise d-${Math.min(gi + 1, 6)}`}>
-          <h2 className="mb-2 px-1 text-[11px] font-extrabold uppercase tracking-wider text-mist-500">{g.label}</h2>
+          <h2 className="mb-2 px-1 text-[11px] font-extrabold uppercase tracking-wider text-mist-500">
+            {g.label}
+          </h2>
           <div className="space-y-2.5">
             {g.entries.map((m) => (
               <EntryRow
@@ -217,10 +261,19 @@ export default function JournalScreen() {
       )}
 
       {/* Detail View (Фаза B) */}
-      <DetailView entry={detailEntry} onClose={() => setDetailId(null)} onOpenEntry={(id) => setDetailId(id)} />
+      <DetailView
+        entry={detailEntry}
+        onClose={() => setDetailId(null)}
+        onOpenEntry={(id) => setDetailId(id)}
+      />
 
       {/* Экспорт (Фаза F): только по явному действию, с подтверждением */}
-      <ExportCsvDialog open={csvOpen} onClose={() => setCsvOpen(false)} entries={j.filtered} periodLabel={periodLabel} />
+      <ExportCsvDialog
+        open={csvOpen}
+        onClose={() => setCsvOpen(false)}
+        entries={j.filtered}
+        periodLabel={periodLabel}
+      />
       <ExportPdfDialog open={pdfOpen} onClose={() => setPdfOpen(false)} />
     </div>
   );
@@ -258,15 +311,21 @@ function EntryRow({
         <MoodFace level={m.mood} size={32} active />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span data-testid="journal-entry-mood" className="text-[13px] font-extrabold text-mist-50">{moodLabel(m.mood)}</span>
+            <span data-testid="journal-entry-mood" className="text-[13px] font-extrabold text-mist-50">
+              {moodLabel(m.mood)}
+            </span>
             <span className="text-[10.5px] font-bold text-mist-500">{minToHM(m.timeMin)}</span>
-            <span className="text-[9.5px] font-bold uppercase tracking-wider text-mist-500/70">{SOURCE_LABEL[m.source]}</span>
+            <span className="text-[9.5px] font-bold uppercase tracking-wider text-mist-500/70">
+              {SOURCE_LABEL[m.source]}
+            </span>
           </div>
           {m.note && <p className="mt-1 text-[12.5px] leading-relaxed text-mist-300">{m.note}</p>}
           {m.tags.length > 0 && (
             <div className="mt-1.5 flex flex-wrap gap-1">
               {m.tags.map((t) => (
-                <span key={t} className="chip !text-[9.5px]">#{t}</span>
+                <span key={t} className="chip !text-[9.5px]">
+                  #{t}
+                </span>
               ))}
             </div>
           )}

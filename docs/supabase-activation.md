@@ -16,6 +16,7 @@
 ## Что сделать в дашборде Supabase
 
 ### 1. Проверить e2e-пользователя (нужно для зелёных E2E с секретами)
+
 - Authentication → Users → **Add user** → `e2e@rhythm.test`, пароль из секрета
   `E2E_PASSWORD`, **Auto Confirm User = ON** (иначе программный вход не пройдёт
   без подтверждения почты).
@@ -23,17 +24,19 @@
   → Email) — только для dev-проекта, не для production.
 
 ### 2. Секреты репозитория (Settings → Secrets and variables → Actions)
-| Секрет | Значение |
-|---|---|
-| `SUPABASE_URL` | `https://<project-ref>.supabase.co` |
+
+| Секрет              | Значение                               |
+| ------------------- | -------------------------------------- |
+| `SUPABASE_URL`      | `https://<project-ref>.supabase.co`    |
 | `SUPABASE_ANON_KEY` | Project Settings → API → `anon public` |
-| `E2E_EMAIL` | `e2e@rhythm.test` |
-| `E2E_PASSWORD` | пароль e2e-пользователя |
+| `E2E_EMAIL`         | `e2e@rhythm.test`                      |
+| `E2E_PASSWORD`      | пароль e2e-пользователя                |
 
 `VITE_*` в отдельные секреты не нужны: CI мапит `SUPABASE_URL/ANON_KEY` в
 `VITE_*` для сборки (см. `.github/workflows/ci.yml`).
 
 ### 3. Google Sign-In
+
 1. [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services →
    Credentials → **Create OAuth client ID** (Web application).
 2. **Authorized redirect URI** (обязательно):
@@ -43,6 +46,7 @@
 4. (Опционально) Authentication → URL Configuration → Site URL = адрес веба.
 
 ### 4. Apple Sign-In
+
 1. Apple Developer → Certificates, IDs & Profiles → **Services ID**
    (identifier вида `com.rhythm.web`), включить **Sign In with Apple**,
    Return URL: `https://<project-ref>.supabase.co/auth/v1/callback`.

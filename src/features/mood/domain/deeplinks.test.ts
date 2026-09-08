@@ -1,11 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  canViewEntry,
-  moodRouteToHash,
-  parseMoodRoute,
-  routeTab,
-  tabToHash,
-} from "./deeplinks";
+import { canViewEntry, moodRouteToHash, parseMoodRoute, routeTab, tabToHash } from "./deeplinks";
 
 describe("parseMoodRoute", () => {
   it("#/mood → обзор с табом по умолчанию", () => {

@@ -65,7 +65,8 @@ export function resolveSlot(
    * не рассматриваем, чтобы перепрыгнуть ВСЮ цепочку (фикс 8, тест L16). */
   let earliestCollidingStart = Infinity;
   for (const o of occupied) {
-    if (s0 < o.endMin && s0 + dur > o.startMin) earliestCollidingStart = Math.min(earliestCollidingStart, o.startMin);
+    if (s0 < o.endMin && s0 + dur > o.startMin)
+      earliestCollidingStart = Math.min(earliestCollidingStart, o.startMin);
   }
   const canGoBack = s0 < earliestCollidingStart;
 
@@ -114,7 +115,11 @@ export interface SlotCheckResult {
 }
 
 /** Задачи, пересекающие интервал [startMin, endMin). */
-export function findCollisions<T extends CollisionInfo>(occupied: T[], startMin: number, endMin: number): T[] {
+export function findCollisions<T extends CollisionInfo>(
+  occupied: T[],
+  startMin: number,
+  endMin: number
+): T[] {
   return occupied.filter((o) => startMin < o.endMin && endMin > o.startMin);
 }
 

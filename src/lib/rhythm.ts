@@ -58,7 +58,9 @@ function runs(series: Point[], test: (v: number) => boolean): Slot[] {
 
 /** Лучшие окна для сложных задач (пики энергии) */
 export function bestSlots(sleepHours: number, mood?: number): Slot[] {
-  return runs(energySeries(sleepHours, mood), (v) => v >= 70).sort((a, b) => b.score - a.score).slice(0, 2);
+  return runs(energySeries(sleepHours, mood), (v) => v >= 70)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 2);
 }
 
 /** Окна, когда стоит отдохнуть */

@@ -9,8 +9,16 @@
 
 import type { Session, User as SbUser } from "@supabase/supabase-js";
 import type {
-  DailyStat, FocusSession, MoodLog, ProductivitySlot, Routine, RoutineCompletion,
-  Suggestion, SuggestionFeedback, Task, TaskTemplate,
+  DailyStat,
+  FocusSession,
+  MoodLog,
+  ProductivitySlot,
+  Routine,
+  RoutineCompletion,
+  Suggestion,
+  SuggestionFeedback,
+  Task,
+  TaskTemplate,
 } from "../types";
 import type { AuthResult, AuthUser, DataProvider, OAuthProvider, ProfilePatch } from "./types";
 import { supabase } from "./client";
@@ -24,9 +32,7 @@ import { supabase } from "./client";
 export const toAuthUser = (u: SbUser): AuthUser => ({
   id: u.id,
   email: u.email ?? "",
-  name:
-    (u.user_metadata?.name as string | undefined) ??
-    (u.email ? u.email.split("@")[0] : "Пользователь"),
+  name: (u.user_metadata?.name as string | undefined) ?? (u.email ? u.email.split("@")[0] : "Пользователь"),
   provider: (u.app_metadata?.provider as AuthUser["provider"] | undefined) ?? "email",
 });
 
@@ -603,11 +609,7 @@ export function createSupabaseProvider(): DataProvider {
         if (error) throw new Error(`routine_completions.insert: ${error.message}`);
       },
       async removeCompletion(userId, id) {
-        const { error } = await sb
-          .from("routine_completions")
-          .delete()
-          .eq("id", id)
-          .eq("user_id", userId);
+        const { error } = await sb.from("routine_completions").delete().eq("id", id).eq("user_id", userId);
         if (error) throw new Error(`routine_completions.remove: ${error.message}`);
       },
     },
@@ -668,7 +670,11 @@ export function createSupabaseProvider(): DataProvider {
     /* ---------- user_profiles ---------- */
     profiles: {
       async get(userId) {
-        const { data, error } = await sb.from("user_profiles").select("*").eq("user_id", userId).maybeSingle();
+        const { data, error } = await sb
+          .from("user_profiles")
+          .select("*")
+          .eq("user_id", userId)
+          .maybeSingle();
         if (error) throw new Error(`user_profiles.get: ${error.message}`);
         return data ? rowToProfilePatch(data as Record<string, unknown>) : null;
       },

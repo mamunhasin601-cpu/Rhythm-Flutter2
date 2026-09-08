@@ -1,12 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  MIN_PEARSON,
-  MIN_SAMPLE,
-  computeCorrelations,
-  mean,
-  median,
-  pearson,
-} from "./correlationService";
+import { MIN_PEARSON, MIN_SAMPLE, computeCorrelations, mean, median, pearson } from "./correlationService";
 import { addDaysKey } from "../../../lib/time";
 import type { FocusSession, MoodLog } from "../../../lib/types";
 

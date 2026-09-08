@@ -67,11 +67,12 @@ export interface TagStat {
 
 export function tagDistribution(moods: MoodLog[]): TagStat[] {
   const map = new Map<string, number[]>();
-  for (const m of moods) for (const t of m.tags) {
-    const arr = map.get(t) ?? [];
-    arr.push(m.mood);
-    map.set(t, arr);
-  }
+  for (const m of moods)
+    for (const t of m.tags) {
+      const arr = map.get(t) ?? [];
+      arr.push(m.mood);
+      map.set(t, arr);
+    }
   return [...map.entries()]
     .map(([tag, g]) => ({ tag, count: g.length, median: median(g) }))
     .sort((a, b) => b.count - a.count);
@@ -84,10 +85,7 @@ export interface DayPoint {
   x: number;
 }
 
-export function dailyPairs(
-  moods: MoodLog[],
-  xOf: (date: string) => number
-): DayPoint[] {
+export function dailyPairs(moods: MoodLog[], xOf: (date: string) => number): DayPoint[] {
   const byDay = new Map<string, number[]>();
   for (const m of moods) {
     const arr = byDay.get(m.date) ?? [];

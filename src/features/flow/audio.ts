@@ -38,7 +38,9 @@ class AmbientEngine {
 
   private audio(): AudioContext {
     if (!this.ctx) {
-      const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const Ctor =
+        window.AudioContext ??
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new Ctor();
       this.master = this.ctx.createGain();
       this.master.gain.value = 0.9;
@@ -58,7 +60,13 @@ class AmbientEngine {
     if (kind === "white") {
       for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
     } else if (kind === "pink") {
-      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      let b0 = 0,
+        b1 = 0,
+        b2 = 0,
+        b3 = 0,
+        b4 = 0,
+        b5 = 0,
+        b6 = 0;
       for (let i = 0; i < len; i++) {
         const w = Math.random() * 2 - 1;
         b0 = 0.99886 * b0 + w * 0.0555179;
@@ -129,7 +137,10 @@ class AmbientEngine {
         pg.gain.value = 0.07;
         patter.connect(bp).connect(pg).connect(gain);
         patter.start();
-        stops.push(() => { body.stop(); patter.stop(); });
+        stops.push(() => {
+          body.stop();
+          patter.stop();
+        });
       } else if (id === "waves") {
         const src = this.noiseSource("brown");
         const lp = ctx.createBiquadFilter();
@@ -145,7 +156,10 @@ class AmbientEngine {
         lfo.start();
         gain.gain.value = 0;
         gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 1.5);
-        stops.push(() => { src.stop(); lfo.stop(); });
+        stops.push(() => {
+          src.stop();
+          lfo.stop();
+        });
       } else if (id === "white_noise") {
         const src = this.noiseSource("white");
         const lp = ctx.createBiquadFilter();
@@ -214,7 +228,10 @@ class AmbientEngine {
         mg.gain.value = 0.1;
         murmur.connect(bp).connect(mg).connect(gain);
         murmur.start();
-        stops.push(() => { rumble.stop(); murmur.stop(); });
+        stops.push(() => {
+          rumble.stop();
+          murmur.stop();
+        });
         const clink = () => {
           if (!this.layers.has(id)) return;
           const c = this.audio();

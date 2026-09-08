@@ -41,7 +41,9 @@ export function Modal({
                 <I n={icon} size={16} />
               </span>
             )}
-            <h2 className="font-display text-[15px] font-semibold tracking-tight text-mist-50 truncate">{title}</h2>
+            <h2 className="font-display text-[15px] font-semibold tracking-tight text-mist-50 truncate">
+              {title}
+            </h2>
           </div>
           <button className="iconbtn" onClick={onClose} aria-label="Закрыть">
             <I n="x" size={16} />
@@ -184,7 +186,14 @@ export function Ring({
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(255,255,255,0.07)" strokeWidth={stroke} fill="none" />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          stroke="rgba(255,255,255,0.07)"
+          strokeWidth={stroke}
+          fill="none"
+        />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -213,7 +222,14 @@ export function Ring({
 /* ---------- Спиннер ---------- */
 export function Spinner({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={`anim-spin ${className}`} aria-hidden="true">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={`anim-spin ${className}`}
+      aria-hidden="true"
+    >
       <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.2" strokeWidth="2.5" />
       <path d="M21 12a9 9 0 00-9-9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     </svg>

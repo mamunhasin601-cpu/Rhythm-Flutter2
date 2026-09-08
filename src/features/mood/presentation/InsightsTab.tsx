@@ -18,7 +18,9 @@ export default function InsightsTab() {
   const [explainFor, setExplainFor] = useState<MoodCorrelation | null>(null);
 
   if (!ready) {
-    return <p className="px-2 py-10 text-center text-[13px] font-semibold text-mist-500">Считаем паттерны…</p>;
+    return (
+      <p className="px-2 py-10 text-center text-[13px] font-semibold text-mist-500">Считаем паттерны…</p>
+    );
   }
 
   /* Нет ни одной корреляции — спокойное онбординг-состояние без давления. */
@@ -28,7 +30,9 @@ export default function InsightsTab() {
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-ink-800 text-vio-300">
           <I n="spark" size={22} />
         </span>
-        <h3 className="mt-3 font-display text-[15px] font-semibold text-mist-50">Наблюдения появятся здесь</h3>
+        <h3 className="mt-3 font-display text-[15px] font-semibold text-mist-50">
+          Наблюдения появятся здесь
+        </h3>
         <p className="mt-1.5 max-w-[360px] text-[12.5px] leading-relaxed text-mist-400">
           Собери чуть больше записей (минимум 7 в группе), и Rhythm покажет, с чем связано твоё настроение.
           Без магии — только твои данные.
@@ -77,7 +81,11 @@ export default function InsightsTab() {
         Наблюдения о связи, а не о причине. Данные пересчитываются при изменении записей.
       </p>
 
-      <ExplainInsightModal correlation={explainFor} routines={app.routines} onClose={() => setExplainFor(null)} />
+      <ExplainInsightModal
+        correlation={explainFor}
+        routines={app.routines}
+        onClose={() => setExplainFor(null)}
+      />
     </div>
   );
 }

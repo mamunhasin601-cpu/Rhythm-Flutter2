@@ -38,13 +38,17 @@ const dbMock = vi.hoisted(() => ({
 }));
 
 vi.mock("../../../state/store", () => ({ useApp: () => appMock }));
-vi.mock("../../../lib/db", () => ({ db: dbMock, sessionStore: { read: () => null, write: vi.fn(), clear: vi.fn() } }));
+vi.mock("../../../lib/db", () => ({
+  db: dbMock,
+  sessionStore: { read: () => null, write: vi.fn(), clear: vi.fn() },
+}));
 
 /* тяжёлые дети журнала — заглушки (DetailView — шпион) */
 vi.mock("./NewInsightBanner", () => ({ default: () => null }));
 vi.mock("./ExportPdfDialog", () => ({ default: () => null }));
 vi.mock("./DetailView", () => ({
-  default: ({ entry }: { entry: MoodLog | null }) => (entry ? <div data-testid="detail">{entry.id}</div> : null),
+  default: ({ entry }: { entry: MoodLog | null }) =>
+    entry ? <div data-testid="detail">{entry.id}</div> : null,
 }));
 
 import JournalScreen from "./JournalScreen";
@@ -88,7 +92,11 @@ describe("Панель фильтров журнала", () => {
     render(<JournalScreen />);
     const feed = screen.getByTestId("journal-list");
     /* запросы по data-testid, не по тексту: «Тяжело» дублируется чипами фильтров вне ленты */
-    expect(within(feed).getAllByTestId("journal-entry-mood").some((el) => el.textContent?.includes("Тяжело"))).toBe(true);
+    expect(
+      within(feed)
+        .getAllByTestId("journal-entry-mood")
+        .some((el) => el.textContent?.includes("Тяжело"))
+    ).toBe(true);
 
     await userEvent.click(screen.getByTitle("Хорошо"));
 
@@ -135,10 +143,7 @@ describe("Экспорт CSV", () => {
   });
 
   it("по подтверждению скачивает файл и логирует ТОЛЬКО факт (без содержимого)", async () => {
-    appMock.moods = [
-      mk({ id: "a", mood: 5, note: "секретная заметка" }),
-      mk({ id: "b", mood: 2 }),
-    ];
+    appMock.moods = [mk({ id: "a", mood: 5, note: "секретная заметка" }), mk({ id: "b", mood: 2 })];
     render(<JournalScreen />);
     await userEvent.click(screen.getByRole("button", { name: "Экспорт CSV" }));
     await userEvent.click(screen.getByRole("button", { name: "Скачать CSV" }));

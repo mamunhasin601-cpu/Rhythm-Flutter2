@@ -32,8 +32,7 @@ export const MOOD_STATES: MoodState[] = [
 export const moodLabel = (score: number): string =>
   MOOD_STATES.find((s) => s.score === score)?.label ?? "Нейтрально";
 
-export const moodHint = (score: number): string =>
-  MOOD_STATES.find((s) => s.score === score)?.hint ?? "";
+export const moodHint = (score: number): string => MOOD_STATES.find((s) => s.score === score)?.hint ?? "";
 
 /* ---------- Теги (§7) ---------- */
 
@@ -89,7 +88,8 @@ export function latestMoodOfDay(moods: MoodLog[], date: string): MoodLog | null 
   let best: MoodLog | null = null;
   for (const m of moods) {
     if (m.date !== date) continue;
-    if (!best || m.timeMin > best.timeMin || (m.timeMin === best.timeMin && m.loggedAt > best.loggedAt)) best = m;
+    if (!best || m.timeMin > best.timeMin || (m.timeMin === best.timeMin && m.loggedAt > best.loggedAt))
+      best = m;
   }
   return best;
 }

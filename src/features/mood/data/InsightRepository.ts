@@ -9,19 +9,13 @@
 
 import { db } from "../../../lib/db";
 import { uid } from "../../../lib/time";
-import type {
-  MoodCorrelation,
-  MoodInsightEvent,
-  MoodInsightFeedback,
-} from "../../../lib/types";
+import type { MoodCorrelation, MoodInsightEvent, MoodInsightFeedback } from "../../../lib/types";
 import { DISMISS_DAYS, staleSignalKeys } from "../domain/insights";
 
 const DAY_MS = 86_400_000;
 
 function ensure(userId: string, signalKey: string): MoodInsightFeedback {
-  const existing = db
-    .insightFeedbackOf(userId)
-    .find((f) => f.signalKey === signalKey);
+  const existing = db.insightFeedbackOf(userId).find((f) => f.signalKey === signalKey);
   if (existing) return existing;
   const row: MoodInsightFeedback = {
     userId,

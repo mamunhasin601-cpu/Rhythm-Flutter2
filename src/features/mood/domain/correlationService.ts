@@ -14,7 +14,13 @@
  * ============================================================ */
 
 import type {
-  CorrelationConfidence, CorrelationDirection, FocusSession, MoodCorrelation, MoodLog, Routine, Task,
+  CorrelationConfidence,
+  CorrelationDirection,
+  FocusSession,
+  MoodCorrelation,
+  MoodLog,
+  Routine,
+  Task,
 } from "../../../lib/types";
 import { addDaysKey, todayKey, weekdayIdx } from "../../../lib/time";
 
@@ -115,11 +121,12 @@ export function computeCorrelations(input: CorrelationInput): MoodCorrelation[] 
 
   /* Шаг 2a. Теги. */
   const tagGroups = new Map<string, MoodLog[]>();
-  for (const m of moods) for (const t of m.tags) {
-    const arr = tagGroups.get(t) ?? [];
-    arr.push(m);
-    tagGroups.set(t, arr);
-  }
+  for (const m of moods)
+    for (const t of m.tags) {
+      const arr = tagGroups.get(t) ?? [];
+      arr.push(m);
+      tagGroups.set(t, arr);
+    }
   tagGroups.forEach((group, tag) => pushCategorical(`tag:${tag}`, group));
 
   /* Шаг 2b. Дни недели. */
@@ -190,8 +197,13 @@ export function computeCorrelations(input: CorrelationInput): MoodCorrelation[] 
 /* ---------- подписи сигналов (для текстовых альтернатив и вкладки) ---------- */
 
 const WD_LABEL: Record<string, string> = {
-  mon: "понедельникам", tue: "вторникам", wed: "средам", thu: "четвергам",
-  fri: "пятницам", sat: "субботам", sun: "воскресеньям",
+  mon: "понедельникам",
+  tue: "вторникам",
+  wed: "средам",
+  thu: "четвергам",
+  fri: "пятницам",
+  sat: "субботам",
+  sun: "воскресеньям",
 };
 
 export function signalLabel(signalKey: string, routines: Routine[]): string {
@@ -211,7 +223,10 @@ export function describeCorrelation(c: MoodCorrelation, routines: Routine[]): st
   const label = signalLabel(c.signalKey, routines);
   if (c.signalType === "numeric") {
     const strength = Math.abs(c.effectSize) >= 0.5 ? "заметная" : "умеренная";
-    const dir = c.direction === "up" ? "сопровождается более высоким настроением" : "сопровождается более низким настроением";
+    const dir =
+      c.direction === "up"
+        ? "сопровождается более высоким настроением"
+        : "сопровождается более низким настроением";
     return `За ${c.period}: ${strength} связь — ${label} ${dir} (r = ${c.effectSize.toFixed(2)}, n = ${c.sampleSize}).`;
   }
   const diff = Math.abs(c.effectSize).toFixed(1);

@@ -26,7 +26,11 @@ export function pearson(xs: number[], ys: number[]): number {
 }
 
 /** Суммарный фокус по неделям (ISO-неделя → минуты). */
-export function focusByWeek(sessions: FocusSession[], weeks = 6, today = todayKey()): { label: string; min: number }[] {
+export function focusByWeek(
+  sessions: FocusSession[],
+  weeks = 6,
+  today = todayKey()
+): { label: string; min: number }[] {
   const out: { label: string; min: number }[] = [];
   for (let w = weeks - 1; w >= 0; w--) {
     const end = addDaysKey(today, -w * 7);

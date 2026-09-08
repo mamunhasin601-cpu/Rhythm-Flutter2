@@ -103,7 +103,8 @@ export function buildCsvParts(entries: MoodLog[], join: ExportJoin, chunkSize = 
 }
 
 export function csvFileName(dateFrom?: string, dateTo?: string, today = new Date()): string {
-  const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const iso = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   if (dateFrom && dateTo) return `rhythm-mood-${dateFrom}-${dateTo}.csv`;
   return `rhythm-mood-${iso(today)}.csv`;
 }
@@ -120,13 +121,20 @@ export interface ReportData {
 }
 
 /** Распределение состояний с текстовым описанием (секция 2 отчёта). */
-export function stateDistribution(entries: MoodLog[]): { mood: number; label: string; count: number; share: number }[] {
+export function stateDistribution(
+  entries: MoodLog[]
+): { mood: number; label: string; count: number; share: number }[] {
   const by = new Map<number, number>();
   for (const m of entries) by.set(m.mood, (by.get(m.mood) ?? 0) + 1);
   const total = Math.max(1, entries.length);
   return [5, 4, 3, 2, 1]
     .filter((s) => by.has(s))
-    .map((s) => ({ mood: s, label: moodLabel(s), count: by.get(s) ?? 0, share: Math.round(((by.get(s) ?? 0) / total) * 100) }));
+    .map((s) => ({
+      mood: s,
+      label: moodLabel(s),
+      count: by.get(s) ?? 0,
+      share: Math.round(((by.get(s) ?? 0) / total) * 100),
+    }));
 }
 
 export function buildReportHtml(data: ReportData): string {
@@ -230,7 +238,11 @@ export const PERIOD_OPTIONS: PeriodOption[] = [
   { id: "all", label: "Всё время" },
 ];
 
-export function periodBounds(id: PeriodOption["id"], todayKey: string, monthStart: string): { from?: string; to?: string; label: string } {
+export function periodBounds(
+  id: PeriodOption["id"],
+  todayKey: string,
+  monthStart: string
+): { from?: string; to?: string; label: string } {
   if (id === "month") return { from: monthStart, to: todayKey, label: `с ${monthStart} по ${todayKey}` };
   if (id === "30d") {
     const d = new Date();

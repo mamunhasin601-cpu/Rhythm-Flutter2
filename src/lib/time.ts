@@ -43,7 +43,20 @@ export const weekdayIdx = (key: string) => (keyToDate(key).getDay() + 6) % 7;
 
 export const WD_SHORT = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const;
 const WD_FULL = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
-const MONTH_GEN = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+const MONTH_GEN = [
+  "января",
+  "февраля",
+  "марта",
+  "апреля",
+  "мая",
+  "июня",
+  "июля",
+  "августа",
+  "сентября",
+  "октября",
+  "ноября",
+  "декабря",
+];
 
 export const weekdayShort = (key: string) => WD_SHORT[weekdayIdx(key)];
 export const weekdayFull = (key: string) => WD_FULL[weekdayIdx(key)];
@@ -88,9 +101,9 @@ export const plural = (n: number, one: string, few: string, many: string) => {
 export const fmtClock = (d = new Date()) => `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 
 export const uid = () =>
-  (typeof crypto !== "undefined" && "randomUUID" in crypto
+  typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
-    : `id-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`);
+    : `id-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
 export const demoHash = (s: string) => {
   let h = 5381;

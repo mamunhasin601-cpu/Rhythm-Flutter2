@@ -59,7 +59,9 @@ export default function TaskLinkPicker({
         onClick={() => toggle(t.id)}
         aria-pressed={on}
         className={`flex w-full items-center gap-2.5 rounded-lg border px-2.5 py-2 text-left transition ${
-          on ? "border-aqua-400/40 bg-aqua-400/[0.08]" : "border-white/6 bg-white/[0.02] hover:bg-white/[0.045]"
+          on
+            ? "border-aqua-400/40 bg-aqua-400/[0.08]"
+            : "border-white/6 bg-white/[0.02] hover:bg-white/[0.045]"
         }`}
       >
         <span
@@ -76,7 +78,8 @@ export default function TaskLinkPicker({
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[12.5px] font-bold text-mist-100">{t.title}</span>
           <span className="block text-[10.5px] font-semibold text-mist-500">
-            {minToHM(t.startMin)}–{minToHM(t.endMin)} · {t.status === "done" ? "выполнена" : t.status === "skipped" ? "пропущена" : "в плане"}
+            {minToHM(t.startMin)}–{minToHM(t.endMin)} ·{" "}
+            {t.status === "done" ? "выполнена" : t.status === "skipped" ? "пропущена" : "в плане"}
           </span>
         </span>
       </button>
@@ -84,9 +87,16 @@ export default function TaskLinkPicker({
   };
 
   return (
-    <Modal open={open} onClose={onClose} title={`Задачи · ${fmtDateShort(entry.date)}`} icon="target" width={480}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={`Задачи · ${fmtDateShort(entry.date)}`}
+      icon="target"
+      width={480}
+    >
       <p className="text-[12px] text-mist-400">
-        Отметь, с чем связано состояние. Записано в {minToHM(entry.timeMin)} — сначала показаны задачи рядом (±{NEAR_WINDOW} мин).
+        Отметь, с чем связано состояние. Записано в {minToHM(entry.timeMin)} — сначала показаны задачи рядом
+        (±{NEAR_WINDOW} мин).
       </p>
 
       {nearby.length > 0 && (
@@ -112,7 +122,9 @@ export default function TaskLinkPicker({
       <div className="mt-5 flex items-center justify-between border-t border-white/6 pt-4">
         <span className="text-[11.5px] font-bold text-mist-500">Выбрано: {selected.length}</span>
         <div className="flex gap-2">
-          <button className="btn btn-ghost" onClick={onClose}>Отмена</button>
+          <button className="btn btn-ghost" onClick={onClose}>
+            Отмена
+          </button>
           <button
             className="btn btn-primary"
             onClick={() => {

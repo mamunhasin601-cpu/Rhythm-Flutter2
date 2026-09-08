@@ -50,9 +50,15 @@ export default function SuggestionSurface({
         let cursor = base;
         for (const st of subtasks) {
           app.addTask({
-            title: st.title, description: "", date: todayKey(),
-            startMin: cursor, endMin: clamp(cursor + st.durationMin, cursor + 15, 23 * 60),
-            color: "indigo", icon: "target", tags: [], energy: "medium",
+            title: st.title,
+            description: "",
+            date: todayKey(),
+            startMin: cursor,
+            endMin: clamp(cursor + st.durationMin, cursor + 15, 23 * 60),
+            color: "indigo",
+            icon: "target",
+            tags: [],
+            energy: "medium",
           });
           cursor += st.durationMin;
         }
@@ -85,11 +91,12 @@ export default function SuggestionSurface({
             onClick={() => setTray(true)}
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/8 bg-white/[0.02] py-1.5 text-[11px] font-bold text-mist-400 transition hover:bg-white/[0.05] hover:text-mist-200"
           >
-            <I n="spark" size={12} /> Ещё {active.length - 1} подсказк{active.length - 1 === 1 ? "а" : "и"} — открыть трей
+            <I n="spark" size={12} /> Ещё {active.length - 1} подсказк{active.length - 1 === 1 ? "а" : "и"} —
+            открыть трей
           </button>
         )}
       </div>
-      <SmartTray open={tray} onClose={() => setTray(false)} />
+      <SmartTray open={tray} onClose={() => setTray(false)} onAccept={handleAccept} />
     </>
   );
 }

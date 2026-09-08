@@ -107,7 +107,9 @@ export function deserializeFilters(raw: string | null | undefined): MoodFilters 
   try {
     const s = JSON.parse(decodeURIComponent(raw)) as SerializedFilters;
     const sources: MoodSource[] = Array.isArray(s.r)
-      ? s.r.filter((x): x is MoodSource => x === "manual" || x === "post_focus" || x === "morning" || x === "evening")
+      ? s.r.filter(
+          (x): x is MoodSource => x === "manual" || x === "post_focus" || x === "morning" || x === "evening"
+        )
       : [];
     return {
       states: Array.isArray(s.s) ? s.s.filter((x) => typeof x === "number" && x >= 1 && x <= 5) : [],

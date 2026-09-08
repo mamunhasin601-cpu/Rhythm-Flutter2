@@ -75,7 +75,8 @@ export default function AuthScreen() {
     /* Устойчивость: любая ошибка (в т.ч. выброшенное исключение) показывает
      * текст и ГАРАНТИРОВАННО гасит спиннер через finally. */
     try {
-      const err = mode === "signup" ? await signUp(name.trim(), email.trim(), pass) : await signIn(email.trim(), pass);
+      const err =
+        mode === "signup" ? await signUp(name.trim(), email.trim(), pass) : await signIn(email.trim(), pass);
       if (err) setFormErr(err);
     } catch (e) {
       setFormErr(e instanceof Error ? e.message : "Не удалось войти — попробуйте ещё раз");
@@ -107,8 +108,14 @@ export default function AuthScreen() {
     <div className="relative z-10 flex h-full">
       {/* ------- бренд-панель ------- */}
       <aside className="relative hidden w-[46%] max-w-[620px] flex-col justify-between overflow-hidden border-r border-white/6 bg-ink-900/60 p-10 lg:flex">
-        <div className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-vio-400/12 blur-3xl" style={{ animation: "drift 9s ease-in-out infinite" }} />
-        <div className="pointer-events-none absolute -right-16 bottom-10 h-64 w-64 rounded-full bg-aqua-400/10 blur-3xl" style={{ animation: "drift 11s ease-in-out infinite reverse" }} />
+        <div
+          className="pointer-events-none absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-vio-400/12 blur-3xl"
+          style={{ animation: "drift 9s ease-in-out infinite" }}
+        />
+        <div
+          className="pointer-events-none absolute -right-16 bottom-10 h-64 w-64 rounded-full bg-aqua-400/10 blur-3xl"
+          style={{ animation: "drift 11s ease-in-out infinite reverse" }}
+        />
 
         <div className="anim-rise flex items-center gap-3">
           <LogoMark size={40} />
@@ -135,12 +142,13 @@ export default function AuthScreen() {
               ))}
             </div>
             <h1 className="font-display text-[34px] font-bold leading-[1.12] tracking-tight text-mist-50">
-              Планировщик, который<br />
+              Планировщик, который
+              <br />
               <span className="text-grad">подстраивается под тебя</span>
             </h1>
             <p className="mt-3 max-w-[400px] text-[14px] leading-relaxed text-mist-400">
-              Rhythm чувствует энергию, настроение и контекст — и перестраивает день,
-              когда жизнь идёт не по плану.
+              Rhythm чувствует энергию, настроение и контекст — и перестраивает день, когда жизнь идёт не по
+              плану.
             </p>
           </div>
           <MiniTimeline />
@@ -211,26 +219,33 @@ export default function AuthScreen() {
                 </Field>
               )}
               <Field label="Почта" error={errs.email}>
-                  <input
-                    className={`input ${errs.email ? "err" : ""}`}
-                    placeholder="you@rhythm.app"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    data-testid="auth-email"
-                  />              </Field>
+                <input
+                  className={`input ${errs.email ? "err" : ""}`}
+                  placeholder="you@rhythm.app"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  data-testid="auth-email"
+                />{" "}
+              </Field>
               <Field label="Пароль" error={errs.pass}>
-                  <input
-                    className={`input ${errs.pass ? "err" : ""}`}
-                    placeholder="••••••••"
-                    type="password"
-                    value={pass}
-                    onChange={(e) => setPass(e.target.value)}
-                    autoComplete={mode === "login" ? "current-password" : "new-password"}
-                    data-testid="auth-password"
-                  />              </Field>
-              <button type="submit" className="btn btn-primary w-full !py-[11px]" disabled={busy !== null} data-testid="auth-submit">
+                <input
+                  className={`input ${errs.pass ? "err" : ""}`}
+                  placeholder="••••••••"
+                  type="password"
+                  value={pass}
+                  onChange={(e) => setPass(e.target.value)}
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  data-testid="auth-password"
+                />{" "}
+              </Field>
+              <button
+                type="submit"
+                className="btn btn-primary w-full !py-[11px]"
+                disabled={busy !== null}
+                data-testid="auth-submit"
+              >
                 {busy === "form" ? <Spinner size={16} /> : <I n="arrowRight" size={16} />}
                 {mode === "login" ? "Войти в свой день" : "Создать аккаунт"}
               </button>
@@ -254,7 +269,8 @@ export default function AuthScreen() {
 
           <p className="anim-rise d-2 mt-4 text-center text-[11.5px] leading-relaxed text-mist-500">
             Демо-режим: аккаунт и данные хранятся локально в браузере.
-            <br />В проде — Supabase Auth; данные хранятся в твоём аккаунте и защищены политиками доступа (RLS).
+            <br />В проде — Supabase Auth; данные хранятся в твоём аккаунте и защищены политиками доступа
+            (RLS).
           </p>
         </div>
       </main>

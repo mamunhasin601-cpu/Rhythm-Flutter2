@@ -72,7 +72,9 @@ export default function DetailView({
           <MoodFace level={entry.mood} size={48} active />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <span className="font-display text-[18px] font-bold tracking-tight text-mist-50">{moodLabel(entry.mood)}</span>
+              <span className="font-display text-[18px] font-bold tracking-tight text-mist-50">
+                {moodLabel(entry.mood)}
+              </span>
               <span className="chip !text-[9.5px]">{SOURCE_LABEL[entry.source]}</span>
             </div>
             <p className="mt-0.5 text-[12px] font-semibold text-mist-400">
@@ -90,7 +92,9 @@ export default function DetailView({
         {entry.tags.length > 0 && (
           <div className="mt-2.5 flex flex-wrap gap-1.5">
             {entry.tags.map((t) => (
-              <span key={t} className="chip">#{t}</span>
+              <span key={t} className="chip">
+                #{t}
+              </span>
             ))}
           </div>
         )}
@@ -110,14 +114,18 @@ export default function DetailView({
           ) : (
             <div className="space-y-1.5">
               {ctx.linkedTasks.map((t) => (
-                <div key={t.id} className="flex items-center gap-2.5 rounded-lg border border-white/6 bg-white/[0.02] px-3 py-2">
+                <div
+                  key={t.id}
+                  className="flex items-center gap-2.5 rounded-lg border border-white/6 bg-white/[0.02] px-3 py-2"
+                >
                   <span style={{ color: colors[t.color] }}>
                     <I n={iconOf(t.icon, "target")} size={15} sw={2} />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[12.5px] font-bold text-mist-100">{t.title}</span>
                     <span className="block text-[10.5px] font-semibold text-mist-500">
-                      {minToHM(t.startMin)}–{minToHM(t.endMin)} · {t.status === "done" ? "выполнена" : t.status === "skipped" ? "пропущена" : "в плане"}
+                      {minToHM(t.startMin)}–{minToHM(t.endMin)} ·{" "}
+                      {t.status === "done" ? "выполнена" : t.status === "skipped" ? "пропущена" : "в плане"}
                     </span>
                   </span>
                   {t.status === "done" && <I n="check" size={14} className="shrink-0 text-aqua-300" />}
@@ -155,10 +163,14 @@ export default function DetailView({
               <div className="font-display text-[17px] font-bold text-mist-50">
                 {ctx.day.tasksDone}/{ctx.day.tasksTotal}
               </div>
-              <div className="text-[9.5px] font-bold uppercase tracking-wider text-mist-500">задач сделано</div>
+              <div className="text-[9.5px] font-bold uppercase tracking-wider text-mist-500">
+                задач сделано
+              </div>
             </div>
             <div className="rounded-lg border border-white/6 bg-white/[0.02] px-3 py-2.5 text-center">
-              <div className="font-display text-[17px] font-bold text-mist-50">{fmtDur(ctx.day.focusMin)}</div>
+              <div className="font-display text-[17px] font-bold text-mist-50">
+                {fmtDur(ctx.day.focusMin)}
+              </div>
               <div className="text-[9.5px] font-bold uppercase tracking-wider text-mist-500">фокуса</div>
             </div>
             <div className="rounded-lg border border-white/6 bg-white/[0.02] px-3 py-2.5 text-center">
@@ -199,7 +211,9 @@ export default function DetailView({
             <I n="trash" size={14} /> {armed ? "Точно удалить?" : "Удалить"}
           </button>
           <div className="ml-auto flex gap-2">
-            <button className="btn btn-ghost" onClick={onClose}>Закрыть</button>
+            <button className="btn btn-ghost" onClick={onClose}>
+              Закрыть
+            </button>
             <button className="btn btn-primary" onClick={() => app.openCheckIn(entry.id)}>
               <I n="edit" size={14} /> Редактировать
             </button>

@@ -23,7 +23,9 @@ const CONFIDENCE_LABEL: Record<MoodCorrelation["confidence"], string> = {
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-white/5 py-2 last:border-0">
-      <span className="shrink-0 text-[11px] font-extrabold uppercase tracking-wider text-mist-500">{label}</span>
+      <span className="shrink-0 text-[11px] font-extrabold uppercase tracking-wider text-mist-500">
+        {label}
+      </span>
       <span className="text-right text-[13px] font-semibold text-mist-100">{value}</span>
     </div>
   );
@@ -56,7 +58,10 @@ export default function ExplainInsightModal({
       <div className="space-y-1">
         <Row label="Сигнал" value={signalLabel(c.signalKey, routines)} />
         <Row label="Тип" value={isNumeric ? "числовой" : "категориальный"} />
-        <Row label="Метод" value={<span className="block max-w-[280px] text-[12px] leading-snug">{method}</span>} />
+        <Row
+          label="Метод"
+          value={<span className="block max-w-[280px] text-[12px] leading-snug">{method}</span>}
+        />
         <Row label="Обычное состояние" value={`${c.baseline.toFixed(1)} из 5`} />
         <Row label="Размер эффекта" value={effectText} />
         <Row label="Наблюдений" value={c.sampleSize} />

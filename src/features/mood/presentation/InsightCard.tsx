@@ -43,10 +43,7 @@ export default function InsightCard({
   const icon = signalIcon(c.signalKey);
 
   return (
-    <article
-      className="card anim-rise p-4"
-      aria-label={`Наблюдение: ${view.text.title}`}
-    >
+    <article className="card anim-rise p-4" aria-label={`Наблюдение: ${view.text.title}`}>
       <div className="flex items-start gap-3.5">
         <span
           className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
@@ -72,9 +69,7 @@ export default function InsightCard({
           <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
             <span className="chip !text-[9.5px]">{periodLabel(c.period)}</span>
             <span className="chip !text-[9.5px]">{c.sampleSize} наблюдений</span>
-            <span className="chip !text-[9.5px]">
-              уверенность: {CONFIDENCE_LABEL[c.confidence]}
-            </span>
+            <span className="chip !text-[9.5px]">уверенность: {CONFIDENCE_LABEL[c.confidence]}</span>
           </div>
 
           {/* действия */}
@@ -85,10 +80,16 @@ export default function InsightCard({
               </span>
             ) : (
               <>
-                <button className="btn btn-soft !px-2.5 !py-1 !text-[11px]" onClick={() => onAccept(c.signalKey)}>
+                <button
+                  className="btn btn-soft !px-2.5 !py-1 !text-[11px]"
+                  onClick={() => onAccept(c.signalKey)}
+                >
                   <I n="check" size={12} sw={2.4} /> Это полезно
                 </button>
-                <button className="btn btn-ghost !px-2.5 !py-1 !text-[11px]" onClick={() => onDismiss(c.signalKey)}>
+                <button
+                  className="btn btn-ghost !px-2.5 !py-1 !text-[11px]"
+                  onClick={() => onDismiss(c.signalKey)}
+                >
                   <I n="x" size={11} /> Не показывать
                 </button>
               </>

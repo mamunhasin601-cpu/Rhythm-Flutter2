@@ -17,7 +17,10 @@ export const MoodPromptRepository = {
     return { userId, ...DEFAULT_PROMPT_SETTINGS, updatedAt: new Date().toISOString() };
   },
 
-  saveSettings(userId: string, patch: Partial<Omit<MoodPromptSettings, "userId" | "updatedAt">>): MoodPromptSettings {
+  saveSettings(
+    userId: string,
+    patch: Partial<Omit<MoodPromptSettings, "userId" | "updatedAt">>
+  ): MoodPromptSettings {
     const current = this.getSettings(userId);
     const next: MoodPromptSettings = { ...current, ...patch, userId, updatedAt: new Date().toISOString() };
     db.upsertPromptSettings(next);
