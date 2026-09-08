@@ -50,7 +50,7 @@ setup("create test user & save storage state", async ({ page }) => {
     ] as [string, string]);
 
     await page.goto("/");
-    await expect(page.getByTestId("nav-journal")).toBeVisible();
+    await expect(page.locator('[data-testid="nav-journal"]:visible')).toBeVisible();
     await page.context().storageState({ path: ".auth/user.json" });
     return;
   }
@@ -69,7 +69,7 @@ setup("create test user & save storage state", async ({ page }) => {
   await page.getByTestId("auth-submit").click();
 
   /* Залогиненный каркас: видна навигация. */
-  await expect(page.getByTestId("nav-journal")).toBeVisible();
+  await expect(page.locator('[data-testid="nav-journal"]:visible')).toBeVisible();
 
   await page.context().storageState({ path: ".auth/user.json" });
 });
