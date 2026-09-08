@@ -60,11 +60,12 @@ test.describe("check-in (ядро привычки)", () => {
     await note.click();
     await note.fill("черновик");
 
-    /* M поверх поля ввода игнорируется: лист единственный, поле в фокусе. */
+    /* M вводится в поле и не перехватывается глобальным хоткеем:
+       лист остаётся единственным, поле — в фокусе. */
     await page.keyboard.press("m");
     await expect(page.getByTestId("checkin-sheet")).toHaveCount(1);
     await expect(note).toBeFocused();
-    await expect(note).toHaveValue("черновик");
+    await expect(note).toHaveValue("черновикm");
 
     /* Esc закрывает лист (штатный выход). */
     await page.keyboard.press("Escape");
